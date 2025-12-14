@@ -1,0 +1,17 @@
+model Review {
+  id           Int        @id @default(autoincrement())
+  reviewerId   Int        
+  reviewedId   Int        
+  travelPlanId Int        
+  rating       Int        
+  comment      String?
+  reviewer     User       @relation("UserReviewsGiven", fields: [reviewerId], references: [id])
+  reviewed     User       @relation("UserReviewsReceived", fields: [reviewedId], references: [id])
+  travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([reviewerId])
+  @@index([reviewedId])
+  @@index([travelPlanId])
+}
