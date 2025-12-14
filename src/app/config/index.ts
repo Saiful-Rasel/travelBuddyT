@@ -23,4 +23,15 @@ export default {
         email: process.env.EMAIL,
         app_pass: process.env.APP_PASS
     },
+    admin: {
+        email: process.env.ADMIN_EMAIL,
+        password: process.env.ADMIN_PASSWORD
+    },
+    ssl: {
+        store_id: process.env.STORE_ID,
+        store_password: process.env.STORE_PASSWORD
+    }
+
 };
+
+

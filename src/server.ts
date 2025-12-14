@@ -1,17 +1,9 @@
 import type { Server } from "http";
 import app from "./app";
 import config from "./app/config";
+import { seedSuperAdmin } from "./app/utils/seedAdmin";
 
-
-
-
-
-
-
-
-
-
-const StartServer = () => {
+const StartServer = async () => {
   let server: Server;
   try {
     server = app.listen(config.port, () => {
@@ -58,4 +50,7 @@ const StartServer = () => {
   }
 };
 
-StartServer();
+(async () => {
+  await StartServer();
+  await seedSuperAdmin();
+})();

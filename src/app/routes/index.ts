@@ -1,6 +1,11 @@
 import express from 'express';
 import { userRoutes } from '../modules/user/user.route';
 import { authRoutes } from '../modules/auth/auth.route';
+import { travelPlanRoutes } from '../modules/travelPlan/travelPlan.route';
+import { matchRequestRoutes } from '../modules/matchRequest/matchRequest.route';
+import { reviewRoutes } from '../modules/reviews/reviews.route';
+import { aiRoutes } from '../modules/LocalAi/ai.route';
+import { paymentRoutes } from '../modules/payment/payment.route';
 
 
 
@@ -14,6 +19,26 @@ const moduleRoutes = [
     {
         path: '/auth',
         route: authRoutes
+    },
+    {
+        path: '/travel-plans',
+        route: travelPlanRoutes
+    },
+    {
+        path: '/match-requests',
+        route: matchRequestRoutes
+    },
+    {
+        path: '/reviews',
+        route: reviewRoutes
+    },
+    {
+        path: '/ai',
+        route:aiRoutes
+    },
+    {
+        path: '/payment',
+        route: paymentRoutes
     },
    
 ];
