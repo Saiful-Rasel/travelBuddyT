@@ -47,8 +47,9 @@ export function AppSidebar({ user }: AppSidebarProps) {
     user.role === "USER"
       ? [
           { label: "Dashboard", href: "/dashboard" },
-          { label: "Travel Plans", href: "/dashboard/travel-plans" },
-          { label: "Profile", href: "/dashboard/profile" },
+          { label: "My Travel Plans", href: "/dashboard/travel-plans" },
+          { label: "create-travel plan", href: "/dashboard/create-travelplan" },
+          { label: "My  Request ", href: "/dashboard/my-request" },
         ]
       : [
           { label: "Admin Dashboard", href: "/admin" },
@@ -68,6 +69,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
           </SidebarTrigger>
         </div>
       </SidebarHeader>
+        <hr  className="text-white"/>
 
       <MenuLinks menuItems={menuItems} />
 

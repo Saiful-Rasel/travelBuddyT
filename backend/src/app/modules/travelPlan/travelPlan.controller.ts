@@ -38,6 +38,7 @@ const getAllTravelPlans = catchAsync(async (req: Request, res: Response) => {
 const getMyTravelPlans = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
     const result = await travelPlanService.getMyTravelPlans(req.user);
+   
 
     sendResponse(res, {
       statusCode: httpStatus.OK,

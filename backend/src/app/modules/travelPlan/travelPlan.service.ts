@@ -59,14 +59,57 @@ const getAllTravelPlans = async () => {
 const getMyTravelPlans = async (user: any) => {
   return await prisma.travelPlan.findMany({
     where: {
-      userId: user.id,
+      userId: user.id, // আমার travel plan
     },
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      user: {
+        select: {
+          id: true,
+          fullName: true,
+          profileImage: true,
+        },
+      },
+
+      // ⭐ ALL MATCH REQUESTS FOR THIS PLAN
+      matchRequests: {
+        include: {
+          sender: {
+            select: {
+              id: true,
+              fullName: true,
+              profileImage: true,
+            },
+          },
+          receiver: {
+            select: {
+              id: true,
+              fullName: true,
+              profileImage: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
+
+      reviews: {
+        include: {
+          reviewer: {
+            select: {
+              id: true,
+              fullName: true,
+              profileImage: true,
+            },
+          },
+        },
+      },
+    },
   });
 };
-
 const getSingleTravelPlan = async (id: number) => {
   return await prisma.travelPlan.findUniqueOrThrow({
     where: { id: id },

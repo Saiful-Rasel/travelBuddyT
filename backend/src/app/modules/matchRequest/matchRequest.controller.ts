@@ -9,7 +9,7 @@ import { matchRequestService } from "./matchRequest.service";
   async (req: Request & { user?: any }, res: Response) => {
     const { travelPlanId, message } = req.body;
 
-    const result = await matchRequestService.createMatchRequest(req.user.id, travelPlanId, message);
+    const result = await matchRequestService.sendRequest(req.user.id, travelPlanId, message);
 
     sendResponse(res, {
       statusCode: 201,

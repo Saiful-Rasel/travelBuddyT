@@ -4,6 +4,14 @@ import { redirect } from "next/navigation";
 import { getUserInfo } from "@/service/auth/getUserInfo";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Metadata } from "next";
+import { Toaster } from "sonner";
+
+export const metadata: Metadata = {
+  title: "TravelBuddy",
+  description: "This is a traveler Website",
+};
+
 
 export default async function DashboardLayout({
   children,
@@ -23,7 +31,9 @@ export default async function DashboardLayout({
             <SidebarTrigger/>
           </div>
 
-          <div className="">{children}</div>
+          <div className="">
+            <Toaster position="top-right" />
+            {children}</div>
         </main>
       </div>
     </SidebarProvider>

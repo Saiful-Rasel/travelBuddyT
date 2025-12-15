@@ -1,7 +1,7 @@
 // src/app/(commonLayout)/travel-plans/[id]/page.tsx
 
 import TravelPlanDetailsClient from "@/components/modules/travel-plans/travelPlanDetailsClient";
-
+import { getUserInfo } from "@/service/auth/getUserInfo";
 
 interface PageProps {
   params: {
@@ -41,7 +41,7 @@ interface TravelPlan {
 }
 
 export default async function TravelPlanDetailsPage({ params }: PageProps) {
-    const unwrappedParams = await params;
+  const unwrappedParams = await params;
   const planId = unwrappedParams.id;
 
   const res = await fetch(
@@ -56,6 +56,7 @@ export default async function TravelPlanDetailsPage({ params }: PageProps) {
   const result = await res.json();
   const plan: TravelPlan = result.data;
 
-  // Pass the fetched plan data to the client component
-  return <TravelPlanDetailsClient plan={plan} />;
+  const userData = await getUserInfo();
+
+  return <TravelPlanDetailsClient plan={plan} currentUser={userData} />;
 }

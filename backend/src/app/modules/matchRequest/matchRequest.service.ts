@@ -2,7 +2,7 @@ import prisma from "../../shared/prisma";
 import AppError from "../../errors/appError";
 import httpStatus from "http-status";
 
-const createMatchRequest = async (
+const sendRequest = async (
   senderId: number,
   travelPlanId: number,
   message?: string
@@ -16,7 +16,7 @@ const createMatchRequest = async (
     throw new AppError(httpStatus.NOT_FOUND, "Travel plan not found");
   }
 
-  // নিজের plan-এ request pathaonot block করা
+ 
   if (travelPlan.userId === senderId) {
     throw new AppError(httpStatus.BAD_REQUEST, "You cannot send a request to your own travel plan");
   }
@@ -99,7 +99,7 @@ const createMatchRequest = async (
 
 
 export const matchRequestService = {
-  createMatchRequest,
+  sendRequest,
   getRequestsForTravelPlan,
   respondToMatchRequest,
   getMySentRequests,
