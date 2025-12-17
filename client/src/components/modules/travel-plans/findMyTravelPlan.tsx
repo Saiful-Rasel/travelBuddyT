@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import UpdateModal from "./updateTravelPlanModal";
 import DeleteTravelPlanDialog from "./deleteTravelPlanModal";
-export type MatchRequestStatus = "PENDING" | "ACCEPTED" | "REJECTED";
+
 interface MatchRequest {
   id: number;
   message?: string;

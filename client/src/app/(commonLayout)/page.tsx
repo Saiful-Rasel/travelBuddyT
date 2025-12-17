@@ -1,7 +1,9 @@
 import Hero from "@/components/modules/home/hero";
+import { getUserInfo } from "@/service/auth/getUserInfo";
 
 
 export default async function Home() {
+  const user = await getUserInfo()
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/feed`,
     {
@@ -13,7 +15,7 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <Hero travelPlans={travelPlans} />
+      <Hero travelPlans={travelPlans} user={user} />
     </div>
   );
 }

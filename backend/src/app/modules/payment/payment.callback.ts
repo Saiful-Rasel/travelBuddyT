@@ -5,29 +5,29 @@ import { PaymentStatus } from "@prisma/client";
 const router = Router();
 
 router.get("/success", async (req: Request, res: Response) => {
+  try {
+    const tranId = req.query.tran_id as string;
 
-  const tranId = req.query.tran_id as string;
+    if (!tranId) {
+      return res.status(400).send("tran_id is missing");
+    }
 
-  if (!tranId) return res.status(400).send("tran_idis  missing");
+    const payment = await prisma.payment.update({
+      where: { tranId },
+      data: { status: PaymentStatus.SUCCESS },
+    });
 
-  const payment = await prisma.payment.update({
-    where: { tranId },
-    data: { status: PaymentStatus.SUCCESS },
-  });
+    await prisma.user.update({
+      where: { id: payment.userId },
+      data: { premium: true },
+    });
 
-  
-  await prisma.user.update({
-    where: { id: payment.userId },
-    data: { premium: true },
-  });
-
-  res.json({
-    success: true,
-    message: "Payment completed successfully",
-    tranId,
-    status: PaymentStatus.SUCCESS,
-  });
-//   res.redirect("/frontend/success");
+    return res.redirect(
+      `http://localhost:3000/payment/success?tran_id=${tranId}`
+    );
+  } catch (error) {
+    return res.redirect("http://localhost:3000/payment/fail");
+  }
 });
 
 router.get("/fail", async (req: Request, res: Response) => {
@@ -39,7 +39,7 @@ router.get("/fail", async (req: Request, res: Response) => {
     data: { status: PaymentStatus.FAILED },
   });
 
-  res.redirect("/frontend/fail");
+  res.redirect( `http://localhost:3000/payment/fail?tran_id=${tranId}`);
 });
 
 router.get("/cancel", async (req: Request, res: Response) => {
@@ -51,7 +51,7 @@ router.get("/cancel", async (req: Request, res: Response) => {
     data: { status: PaymentStatus.CANCELLED },
   });
 
-  res.redirect("/frontend/cancel");
+  res.redirect(`http://localhost:3000/payment/cancel?tran_id=${tranId}`);
 });
 
 export default router;

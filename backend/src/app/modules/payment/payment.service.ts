@@ -27,9 +27,9 @@ const createPayment = async (paymentData: any, user: any) => {
     total_amount: amount,
     currency: "BDT",
     tran_id: tranId, // use unique tran_id for each api call
-    success_url: `http://localhost:3030/payment/success?tran_id=${tranId}`,
-    fail_url: `http://localhost:3030/payment/fail?tran_id=${tranId}`,
-    cancel_url: `http://localhost:3030/payment/cancel?tran_id=${tranId}`,
+    success_url: `http://localhost:8000/api/payment/success?tran_id=${tranId}`,
+    fail_url: `http://localhost:8000/api/payment/fail?tran_id=${tranId}`,
+    cancel_url: `http://localhost:8000/api/payment/cancel?tran_id=${tranId}`,
     ipn_url: "http://localhost:3030/ipn",
     shipping_method: "Courier",
     product_name: "Computer.",

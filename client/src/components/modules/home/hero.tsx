@@ -3,11 +3,15 @@ import { motion } from "framer-motion";
 import TravelPlanCard from "../travel-plans/travelPlanCard";
 import Link from "next/link";
 import { TravelPlan } from "@/components/types/travelPlan";
+import { User } from "@/components/types/user";
+import PremiumItineraryClient from "../local-ai/localai";
 
 interface HeroProps {
   travelPlans: TravelPlan[];
+  user?: User | null;
 }
-export default function Hero({ travelPlans }: HeroProps) {
+export default function Hero({ travelPlans, user }: HeroProps) {
+  console.log(user, "from hero");
   return (
     <div className="w-full flex flex-col gap-20 px-4 md:px-10  transition-colors">
       {/* Hero Banner */}
@@ -30,7 +34,6 @@ export default function Hero({ travelPlans }: HeroProps) {
           perfect journey.
         </motion.p>
       </section>
-
       {/* Popular Destinations */}
       <section className="p-10 bg-white dark:bg-gray-800 rounded-2xl shadow dark:shadow-gray-700 transition-colors">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
@@ -83,7 +86,6 @@ export default function Hero({ travelPlans }: HeroProps) {
           </Link>
         </div>
       </section>
-
       {/* Top-Rated Travelers */}
       <section className="p-10 bg-zinc-50 dark:bg-gray-900 rounded-2xl shadow dark:shadow-gray-700 transition-colors w-full">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
@@ -108,7 +110,6 @@ export default function Hero({ travelPlans }: HeroProps) {
           ))}
         </div>
       </section>
-
       {/* Why Choose Us */}
       <section className="p-10 bg-white dark:bg-gray-800 rounded-2xl shadow dark:shadow-gray-700 transition-colors">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
@@ -137,7 +138,6 @@ export default function Hero({ travelPlans }: HeroProps) {
           ))}
         </div>
       </section>
-
       {/* Travel Categories */}
       <section className="p-10 bg-zinc-50 dark:bg-gray-900 rounded-2xl shadow dark:shadow-gray-700 transition-colors">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
@@ -158,6 +158,9 @@ export default function Hero({ travelPlans }: HeroProps) {
             </motion.div>
           ))}
         </div>
+      </section>
+      <section className="p-10 bg-zinc-50 dark:bg-gray-900 rounded-2xl shadow dark:shadow-gray-700 transition-colors">
+        <PremiumItineraryClient user={user} />
       </section>
     </div>
   );

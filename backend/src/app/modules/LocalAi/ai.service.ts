@@ -18,7 +18,7 @@ const CITY_DB: Record<string, CityInfo> = {
   "dhaka": { display: "Dhaka", highlights: ["Ahsan Manzil","Lalbagh Fort","Dhakeshwari Temple","Star Mosque","Sadarghat Launch Terminal","Bangabandhu Museum"], foodSpots: ["Old Dhaka biryani","Haji Biryani","Fuchka"], altKeys:["dhaka","daka"] },
   "cox's bazar": { display:"Cox's Bazar", highlights:["Inani Beach","Himchari National Park","New Market","Laboni Point"], foodSpots:["Seafood stalls at Laboni"], altKeys:["cox s bazar","cox,s bazar","coxsbazar","coxs bazar"] },
   "sylhet": { display:"Sylhet", highlights:["Ratargul Swamp Forest","Jaflong","Tea Gardens","Shrine of Hazrat Shah Jalal"], foodSpots:["Local tea houses","Sylheti dishes"], altKeys:["sylhet"] }
-  // আরও places add করতে পারো
+  // more places can be added
 };
 
 function normalizeKey(s: string) {
@@ -75,14 +75,14 @@ export async function generateItinerary(payload: ItineraryPayload = {}) {
   };
 }
 
-// Templates generator
+// Templates generator in English
 function getTemplatesForCity(cityInfo: CityInfo | null, interests: string[]) {
   const baseTemplates = [
-    { morning:"হোটেলে চেক-ইন; নিকটস্থ এলাকা ঘুরে স্থানীয় নাস্তা গ্রহণ", afternoon:"শহরের প্রধান আকর্ষণ পরিদর্শন", evening:"লোকাল রেস্টুরেন্টে ডিনার ও বাজার ঘোরাঘুরি" },
-    { morning:"প্রতিষ্ঠিত কোনো দর্শনীয় স্থান বা মিউজিয়াম দেখুন", afternoon:"লোকাল মার্কেট/স্ট্রিট ফুড অন্বেষণ", evening:"সানসেট স্পট বা রিভারসাইডে সময় কাটান" },
-    { morning:"অলিতে-ঘুরে নেবেন: প্রাকৃতিক দৃশ্য/পাহার/সমুদ্র সৈকত", afternoon:"ফটোগ্রাফি ও কফি শপ হপিং", evening:"স্থানীয় সাংস্কৃতিক অনুষ্ঠান বা হ্যান্ডিক্রাফট মার্কেট" },
-    { morning:"ডে-ট্রিপ: কাছাকাছি কোনো আকর্ষণীয় স্থানে ভ্রমণ", afternoon:"লোকাল খাবার ও ঐতিহাসিক স্থান", evening:"হোটেলে বিশ্রাম ও পরিকল্পনা পর্যালোচনা" },
-    { morning:"শেষ মুহূর্ত শপিং বা দর্শন", afternoon:"চেক-আউট এবং ট্রান্সফার প্রস্তুতি", evening:"যাত্রা শুরু" }
+    { morning:"Check-in at hotel; explore nearby area and grab local snacks", afternoon:"Visit main city attractions", evening:"Dinner at local restaurant and explore the market" },
+    { morning:"Visit a famous museum or landmark", afternoon:"Explore local markets and street food", evening:"Relax at sunset spot or riverside" },
+    { morning:"Stroll alleys for scenic views, hills or beaches", afternoon:"Photography and coffee shop hopping", evening:"Attend local cultural events or handicraft market" },
+    { morning:"Day-trip to a nearby attraction", afternoon:"Try local food and explore historic spots", evening:"Relax at hotel and review plans" },
+    { morning:"Last-minute shopping or sightseeing", afternoon:"Check-out and prepare for transfer", evening:"Journey begins" }
   ];
 
   if (!cityInfo) return baseTemplates;
@@ -92,30 +92,30 @@ function getTemplatesForCity(cityInfo: CityInfo | null, interests: string[]) {
   const cityTemplates = [];
 
   cityTemplates.push({
-    morning:`আগমন ও হোটেলে চেক-ইন; তারপর ${highlights[0] || "প্রধান স্পট"} ঘোরা`,
-    afternoon:`স্থানীয় খাবার চেখে দেখা (${food[0]||"লোকাল খাবার"}) ও নিকটস্থ মার্কেট ঘোরা`,
-    evening:`সানসেট/রiverside বা বিখ্যাত evening spot এ সময় কাটান`
+    morning:`Arrival & hotel check-in; then visit ${highlights[0] || "main attraction"}`,
+    afternoon:`Taste local food (${food[0] || "local cuisine"}) and explore nearby market`,
+    evening:`Spend time at sunset/riverside or popular evening spot`
   });
 
   if (highlights.length >= 2) {
     cityTemplates.push({
-      morning:`বিখ্যাত ঐতিহাসিক/সাংস্কৃতিক স্থান পরিদর্শন (${highlights[1]})`,
-      afternoon:`লোকাল হস্তশিল্প/বাজার ঘোরা ও কফি-ব্রেক`,
-      evening:`শহরের জনপ্রিয় ডিনার স্পট বা ফুড স্টল ট্যুর`
+      morning:`Visit famous historical/cultural site (${highlights[1]})`,
+      afternoon:`Explore local crafts/market and enjoy a coffee break`,
+      evening:`Dinner at popular city spots or food stalls`
     });
   }
 
   for (let i=cityTemplates.length; i<5; i++) {
-    cityTemplates.push(baseTemplates[i%baseTemplates.length]);
+    cityTemplates.push(baseTemplates[i % baseTemplates.length]);
   }
 
   return cityTemplates;
 }
 
 function estimateCostLabel(style: string) {
-  if (!style) return "মধ্যম";
+  if (!style) return "Moderate";
   const s = style.toLowerCase();
-  if (s.includes("budget") || s.includes("low")) return "কম";
-  if (s.includes("luxury") || s.includes("high")) return "উচ্চ";
-  return "মধ্যম";
+  if (s.includes("budget") || s.includes("low")) return "Low";
+  if (s.includes("luxury") || s.includes("high")) return "High";
+  return "Moderate";
 }
