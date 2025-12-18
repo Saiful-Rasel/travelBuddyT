@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AdminRoutes = void 0;
+const express_1 = require("express");
+const authGuard_1 = __importDefault(require("../../middleware/authGuard"));
+const client_1 = require("@prisma/client");
+const admin_controller_1 = require("./admin.controller");
+const router = (0, express_1.Router)();
+router.get("/users", (0, authGuard_1.default)(client_1.Role.ADMIN), admin_controller_1.AdminController.getAllUser);
+router.patch("/users/:id/role", (0, authGuard_1.default)(client_1.Role.ADMIN), admin_controller_1.AdminController.updateUserRole);
+router.patch("/travel-plans/:id/block", (0, authGuard_1.default)(client_1.Role.ADMIN), admin_controller_1.AdminController.blockTravelPlanByAdmin);
+router.patch("/travel-plans/:id/unblock", (0, authGuard_1.default)(client_1.Role.ADMIN), admin_controller_1.AdminController.unBlockTravelPlanByAdmin);
+router.get("/payments", (0, authGuard_1.default)(client_1.Role.ADMIN), admin_controller_1.AdminController.getPayments);
+router.get("/stats", (0, authGuard_1.default)(client_1.Role.ADMIN), admin_controller_1.AdminController.getStats);
+router.delete("/user/:id", (0, authGuard_1.default)(client_1.Role.ADMIN), admin_controller_1.AdminController.deleteUser);
+router.patch("/users/:id/updatePayment", (0, authGuard_1.default)(client_1.Role.ADMIN), admin_controller_1.AdminController.verifyBadgeController);
+exports.AdminRoutes = router;

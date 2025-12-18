@@ -56,16 +56,13 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
     }))
   );
 
-  // ================= NEW FUNCTION: Handle Accept/Reject =================
   const handleRequestAction = async (requestId: number, action: "ACCEPTED" | "REJECTED") => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/match-requests/${requestId}`,
         {
           method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ action }),
           credentials: "include",
         }
@@ -78,7 +75,6 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
 
       const data = await res.json();
 
-      // Update plansList with new request status
       setPlansList((prev) =>
         prev.map((plan) => ({
           ...plan,
@@ -94,7 +90,6 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
       toast.error(err.message || "Failed to update request");
     }
   };
-  // ======================================================================
 
   const handleEdit = (plan: TravelPlan) => {
     setSelectedPlan(plan);
@@ -157,10 +152,7 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
   const deleteTravelPlan = async (id: number) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/${id}`,
-      {
-        method: "DELETE",
-        credentials: "include",
-      }
+      { method: "DELETE", credentials: "include" }
     );
     if (!res.ok) throw new Error("Failed to delete");
     setPlansList((prev) => prev.filter((plan) => plan.id !== id));
@@ -191,7 +183,6 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
             >
               <Card className="rounded-2xl shadow-md">
                 <CardContent className="p-5 space-y-4">
-                  {/* Plan Info */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       {plan.image && (
@@ -240,9 +231,7 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                   <Separator />
 
                   <div className="flex gap-2">
-                    <Button size="sm" onClick={() => handleEdit(plan)}>
-                      Edit
-                    </Button>
+                    <Button size="sm" onClick={() => handleEdit(plan)}>Edit</Button>
                     <DeleteTravelPlanDialog
                       planId={plan.id}
                       planTitle={plan.title}
@@ -252,7 +241,6 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
 
                   <Separator />
 
-                  {/* Match Requests */}
                   <div className="space-y-3">
                     <h3 className="font-semibold">
                       Requests ({plan.matchRequests?.length || 0})

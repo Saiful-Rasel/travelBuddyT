@@ -1,9 +1,6 @@
-
 import AppError from "../../errors/appError";
 import httpStatus from "http-status";
 import prisma from "../../shared/prisma";
-
-
 
 const createReview = async (
   reviewerId: number,
@@ -20,7 +17,7 @@ const createReview = async (
     where: {
       travelPlanId,
       senderId: reviewerId,
-      status: "ACCEPTED", 
+      status: "ACCEPTED",
     },
   });
 
@@ -37,6 +34,16 @@ const createReview = async (
   if (existing) {
     throw new AppError(httpStatus.BAD_REQUEST, "Review already exists");
   }
+    const plan = await prisma.travelPlan.findUnique({ where: { id: travelPlanId } });
+  if (!plan) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Travel plan not found");
+  }
+  if (plan.isActive) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "You can review only after the plan ends"
+    );
+  }
 
   return await prisma.review.create({
     data: {
@@ -49,8 +56,7 @@ const createReview = async (
   });
 };
 
-
- const getReviewsByTravelPlan = async (travelPlanId: number) => {
+const getReviewsByTravelPlan = async (travelPlanId: number) => {
   return await prisma.review.findMany({
     where: { travelPlanId },
     include: {
@@ -61,8 +67,7 @@ const createReview = async (
   });
 };
 
-
- const getReviewsForUser = async (userId: number) => {
+const getReviewsForUser = async (userId: number) => {
   return await prisma.review.findMany({
     where: { reviewedId: userId },
     include: {
@@ -73,15 +78,17 @@ const createReview = async (
   });
 };
 
-
- const updateReview = async (
+const updateReview = async (
   reviewId: number,
   reviewerId: number,
   data: { rating?: number; comment?: string }
 ) => {
   const review = await prisma.review.findUnique({ where: { id: reviewId } });
   if (!review || review.reviewerId !== reviewerId) {
-    throw new AppError(httpStatus.FORBIDDEN, "Not allowed to update this review");
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Not allowed to update this review"
+    );
   }
 
   return await prisma.review.update({
@@ -90,11 +97,13 @@ const createReview = async (
   });
 };
 
-
- const deleteReview = async (reviewId: number, reviewerId: number) => {
+const deleteReview = async (reviewId: number, reviewerId: number) => {
   const review = await prisma.review.findUnique({ where: { id: reviewId } });
   if (!review || review.reviewerId !== reviewerId) {
-    throw new AppError(httpStatus.FORBIDDEN, "Not allowed to delete this review");
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Not allowed to delete this review"
+    );
   }
 
   return await prisma.review.delete({ where: { id: reviewId } });
@@ -106,4 +115,4 @@ export const reviewService = {
   getReviewsForUser,
   updateReview,
   deleteReview,
-};      
+};

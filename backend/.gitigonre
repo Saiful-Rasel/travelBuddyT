@@ -1,2 +1,9 @@
 .env
 node_modules
+dist
+.vercel
+.env.local
+/generated/prisma
+uploads/*
+!uploads/.gitkeep
+*.log

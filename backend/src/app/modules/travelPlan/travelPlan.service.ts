@@ -178,7 +178,7 @@ const getFeedTravelPlans = async (
   } = filters;
 
   const whereConditions: any = {
-    isActive: true,
+    
     NOT: {
       userId: userId,
     },

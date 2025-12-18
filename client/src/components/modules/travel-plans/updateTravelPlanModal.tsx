@@ -112,67 +112,89 @@ export default function UpdateModal({ isOpen, onClose, initialData, onSubmit }: 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Update Travel Plan</DialogTitle>
-          <DialogDescription>Update your travel plan details below.</DialogDescription>
-        </DialogHeader>
+  <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-auto">
+    <DialogHeader>
+      <DialogTitle>Update Travel Plan</DialogTitle>
+      <DialogDescription>Update your travel plan details below.</DialogDescription>
+    </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
-          <div className="space-y-1">
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" name="title" value={formData.title} onChange={handleChange} />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="destination">Destination</Label>
-            <Input id="destination" name="destination" value={formData.destination} onChange={handleChange} />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="startDate">Start Date</Label>
-            <Input id="startDate" type="date" name="startDate" value={formData.startDate} onChange={handleChange} />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="endDate">End Date</Label>
-            <Input id="endDate" type="date" name="endDate" value={formData.endDate} onChange={handleChange} />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="minBudget">Min Budget</Label>
-            <Input id="minBudget" type="number" name="minBudget" value={formData.minBudget || ""} onChange={handleChange} />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="maxBudget">Max Budget</Label>
-            <Input id="maxBudget" type="number" name="maxBudget" value={formData.maxBudget || ""} onChange={handleChange} />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="travelType">Travel Type</Label>
-            <select id="travelType" name="travelType" value={formData.travelType} onChange={handleChange} className="w-full rounded border px-3 py-2">
-              <option value="">Select type</option>
-              <option value="SOLO">SOLO</option>
-              <option value="FRIENDS">FRIENDS</option>
-              <option value="FAMILY">FAMILY</option>
-              <option value="COUPLE">COUPLE</option>
-            </select>
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="description">Description</Label>
-            <Textarea id="description" name="description" value={formData.description || ""} onChange={handleChange} />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="image">Travel Plan Image</Label>
-            <Input id="image" type="file" accept="image/*" onChange={handleImageChange} />
-          </div>
-          <div className="space-y-2">
-            <Label>Itinerary</Label>
-            {Array.isArray(formData.itinerary) && formData.itinerary.map((item, index) => (
-              <Input key={index} placeholder={`Day ${item.day} Activity`} value={item.activity} onChange={(e) => handleItineraryChange(index, e.target.value)} />
-            ))}
-          </div>
-          <DialogFooter className="flex justify-end gap-2 mt-4">
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Updating..." : "Update"}</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+      <div className="space-y-1">
+        <Label htmlFor="title">Title</Label>
+        <Input id="title" name="title" value={formData.title} onChange={handleChange} />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="destination">Destination</Label>
+        <Input id="destination" name="destination" value={formData.destination} onChange={handleChange} />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="startDate">Start Date</Label>
+        <Input id="startDate" type="date" name="startDate" value={formData.startDate} onChange={handleChange} />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="endDate">End Date</Label>
+        <Input id="endDate" type="date" name="endDate" value={formData.endDate} onChange={handleChange} />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="minBudget">Min Budget</Label>
+        <Input id="minBudget" type="number" name="minBudget" value={formData.minBudget || ""} onChange={handleChange} />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="maxBudget">Max Budget</Label>
+        <Input id="maxBudget" type="number" name="maxBudget" value={formData.maxBudget || ""} onChange={handleChange} />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="travelType">Travel Type</Label>
+        <select
+          id="travelType"
+          name="travelType"
+          value={formData.travelType}
+          onChange={handleChange}
+          className="w-full rounded border px-3 py-2"
+        >
+          <option value="">Select type</option>
+          <option value="SOLO">SOLO</option>
+          <option value="FRIENDS">FRIENDS</option>
+          <option value="FAMILY">FAMILY</option>
+          <option value="COUPLE">COUPLE</option>
+        </select>
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="description">Description</Label>
+        <Textarea id="description" name="description" value={formData.description || ""} onChange={handleChange} />
+      </div>
+
+      <div className="space-y-1">
+        <Label htmlFor="image">Travel Plan Image</Label>
+        <Input id="image" type="file" accept="image/*" onChange={handleImageChange} />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Itinerary</Label>
+        {formData.itinerary.map((item, index) => (
+          <Input
+            key={index}
+            placeholder={`Day ${item.day} Activity`}
+            value={item.activity}
+            onChange={(e) => handleItineraryChange(index, e.target.value)}
+          />
+        ))}
+      </div>
+
+      <DialogFooter className="flex justify-end gap-2 mt-4 sticky bottom-0 bg-white pt-2">
+        <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+        <Button type="submit" disabled={isSubmitting}>{isSubmitting ? "Updating..." : "Update"}</Button>
+      </DialogFooter>
+    </form>
+  </DialogContent>
+</Dialog>
+
   );
 }
