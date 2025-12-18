@@ -1,7 +1,12 @@
+import AdminStats from "@/components/modules/admin/adminStatsClient";
 import { getUserInfo } from "@/service/auth/getUserInfo";
+import { getCookie } from "@/service/auth/tokenHandler";
 
-export default async function UserDashboard() {
+
+export default async function AdminDashboard() {
   const user = await getUserInfo();
+
+
 
 
   return (
@@ -14,6 +19,7 @@ export default async function UserDashboard() {
           {user?.fullName}
         </h2>
         <p className="text-gray-500 text-sm md:text-base mb-8">{user?.email}</p>
+      <AdminStats  />
       </div>
     </div>
   );

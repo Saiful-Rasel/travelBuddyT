@@ -34,7 +34,7 @@ router.post(
   }
 );
 
-router.get("/", travelPlanController.getAllTravelPlans);
+router.get("/",auth(Role.ADMIN), travelPlanController.getAllTravelPlans);
 
 router.get(
   "/my",

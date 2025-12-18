@@ -9,7 +9,7 @@ export default function Footer() {
         
         {/* About */}
         <div>
-          <h3 className="text-xl font-bold mb-4">TravelBuddy</h3>
+          <h3 className="text-xl font-bold mb-4 text-blue-500">TravelBuddy</h3>
           <p className="text-sm text-gray-700 dark:text-gray-300">
             Connect with fellow travelers, share experiences, and explore the world together.
           </p>
@@ -20,8 +20,8 @@ export default function Footer() {
         {/* Contact */}
         <div>
           <h3 className="text-lg font-semibold mb-4">Contact</h3>
-          <p className="text-sm text-gray-700 dark:text-gray-300">Email: support@travelbuddy.com</p>
-          <p className="text-sm text-gray-700 dark:text-gray-300">Phone: +880 1234 567890</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">Email: saiful737rf@gmail.com</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">Phone: +8801624616583</p>
           <p className="text-sm text-gray-700 dark:text-gray-300">Bangladesh</p>
         </div>
 

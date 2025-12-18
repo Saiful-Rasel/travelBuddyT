@@ -6,6 +6,7 @@ import { matchRequestRoutes } from '../modules/matchRequest/matchRequest.route';
 import { reviewRoutes } from '../modules/reviews/reviews.route';
 import { aiRoutes } from '../modules/LocalAi/ai.route';
 import { paymentRoutes } from '../modules/payment/payment.route';
+import { AdminRoutes } from '../modules/admin/admin.route';
 
 
 
@@ -39,6 +40,10 @@ const moduleRoutes = [
     {
         path: '/payment',
         route: paymentRoutes
+    },
+    {
+        path: '/admin',
+        route: AdminRoutes
     },
    
 ];

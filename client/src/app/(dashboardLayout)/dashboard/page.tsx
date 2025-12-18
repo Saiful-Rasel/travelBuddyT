@@ -1,8 +1,11 @@
+"use server"
+
 import { getUserInfo } from "@/service/auth/getUserInfo";
+
 
 export default async function UserDashboard() {
   const user = await getUserInfo();
-  console.log(user)
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6 md:p-12">
       <div className="text-center">
@@ -13,6 +16,7 @@ export default async function UserDashboard() {
           {user?.fullName}
         </h2>
         <p className="text-gray-500 text-sm md:text-base mb-8">{user?.email}</p>
+     
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ interface HeroProps {
   user?: User | null;
 }
 export default function Hero({ travelPlans, user }: HeroProps) {
-  console.log(user, "from hero");
+  
   return (
     <div className="w-full flex flex-col gap-20 px-4 md:px-10  transition-colors">
       {/* Hero Banner */}
@@ -35,29 +35,7 @@ export default function Hero({ travelPlans, user }: HeroProps) {
         </motion.p>
       </section>
       {/* Popular Destinations */}
-      <section className="p-10 bg-white dark:bg-gray-800 rounded-2xl shadow dark:shadow-gray-700 transition-colors">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
-          Popular Destinations
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {["Paris", "Bali", "New York"].map((place, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="p-6 bg-zinc-100 dark:bg-gray-700 rounded-xl shadow dark:shadow-gray-600 hover:shadow-lg transition-colors"
-            >
-              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                {place}
-              </h3>
-              <p className="text-sm text-zinc-600 dark:text-gray-300">
-                Explore the beauty and culture of {place}.
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+     
       {/* card  */}
       <section className="w-full py-5  bg-zinc-50 dark:bg-black">
         <div className="text-center max-w-6xl mx-auto mb-8">

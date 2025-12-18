@@ -34,7 +34,7 @@ export default function RootLayout({
         <div className="flex flex-col min-h-screen">
           <NavbarServer />
           <main className="flex-1 pt-[76px] pb-[120px]">{children}</main>
-          <Toaster position="top-right" />
+          <Toaster richColors position="top-right" />
           <Footer />
         </div>
       </body>

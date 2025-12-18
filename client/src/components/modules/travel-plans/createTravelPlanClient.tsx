@@ -22,7 +22,11 @@ interface ItineraryItem {
   activity: string;
 }
 
-export default function CreateTravelPlanForm() {
+interface CreateTravelPlanFormProps {
+  onSuccess?: () => void; // optional callback when plan is created
+}
+
+export default function CreateTravelPlanForm({onSuccess}:CreateTravelPlanFormProps) {
   const [state, formAction, isPending] = useActionState(createTravelPlan, null);
   const [itinerary, setItinerary] = useState<ItineraryItem[]>([{ day: 1, activity: "" }]);
 
@@ -30,6 +34,7 @@ export default function CreateTravelPlanForm() {
     if (state?.success) {
       toast.success("Travel plan created successfully");
       setItinerary([{ day: 1, activity: "" }]);
+       onSuccess?.();
     }
 
     if (state && !state.success && state.message) {

@@ -40,7 +40,7 @@ const getAllUser = async (options: any) => {
     where: { role: "USER" },
   });
 
-  // paginated users
+
   const data = await prisma.user.findMany({
     where: { role: "USER" },
     skip,

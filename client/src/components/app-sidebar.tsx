@@ -52,9 +52,11 @@ export function AppSidebar({ user }: AppSidebarProps) {
           { label: "My  Request ", href: "/dashboard/my-request" },
         ]
       : [
-          { label: "Admin Dashboard", href: "/admin" },
-          { label: "Manage Users", href: "/admin/manage-users" },
-          { label: "Manage Travel Plans", href: "/admin/manage-travel-plans" },
+          { label: "Overview (Dashboard)", href: "/dashboard/admin" },
+          { label: "Manage Users", href: "/dashboard/admin/manage-user" },
+          { label: "Manage Travel Plans", href: "/dashboard/admin/manage-travel-plans" },
+          { label: "Payment & Subscriptions", href: "/dashboard/admin/payment" },
+          // { label: "Payment & Subscriptions", href: "/dashboard/admin/payment-subscriptions" },
         ];
 
   return (

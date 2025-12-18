@@ -4,6 +4,7 @@ import { useState } from "react";
 import { deleteCookie } from "@/service/auth/tokenHandler";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface LogoutButtonProps {
   redirectTo?: string;
@@ -15,7 +16,7 @@ export default function LogoutButton({
   className = "",
 }: LogoutButtonProps) {
   const [loading, setLoading] = useState(false);
-
+const router = useRouter()
   const handleLogout = async () => {
     try {
       setLoading(true);
@@ -25,8 +26,9 @@ export default function LogoutButton({
       toast.success("Logged out successfully 👋");
 
       setTimeout(() => {
-        window.location.href = redirectTo;
-      }, 1200);
+        // window.location.href = redirectTo;
+        router.push(redirectTo)
+      }, 900);
     } catch {
       toast.error("Logout failed!");
       setLoading(false);

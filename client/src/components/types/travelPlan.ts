@@ -22,4 +22,5 @@ export interface TravelPlan {
   description?: string;
   image?: string | null;
   reviews?: Review[];
+  isActive:boolean
 }

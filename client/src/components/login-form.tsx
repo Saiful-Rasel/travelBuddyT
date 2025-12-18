@@ -13,17 +13,16 @@ import { getFieldError } from "@/lib/getFieldError";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-
 const LoginForm = ({ redirect }: { redirect?: string }) => {
-  const router = useRouter()
+  const router = useRouter();
   const [state, formAction, isPending] = useActionState(loginUser, null);
 
- 
-
-    useEffect(() => {
+  useEffect(() => {
     if (state && state.success && state.redirectUrl) {
-      toast.success("login successFully")
-      router.push(state.redirectUrl); 
+      toast.success("login successFully");
+      setTimeout(() => {
+        router.push(state.redirectUrl);
+      }, 800);
     }
     if (state && !state.success && state.message) {
       toast.error(state.message);
@@ -45,13 +44,12 @@ const LoginForm = ({ redirect }: { redirect?: string }) => {
               placeholder="m@example.com"
               //   required
             />
-            
 
             {getFieldError(state, "email") && (
               <FieldDescription className="text-red-600">
-                {getFieldError(state,   "email")}
+                {getFieldError(state, "email")}
               </FieldDescription>
-            )}  
+            )}
           </Field>
 
           {/* Password */}
@@ -83,7 +81,6 @@ const LoginForm = ({ redirect }: { redirect?: string }) => {
                 Sign up
               </Link>
             </FieldDescription>
-         
           </Field>
         </FieldGroup>
       </FieldGroup>

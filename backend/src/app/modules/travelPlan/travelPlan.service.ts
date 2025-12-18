@@ -4,6 +4,7 @@ import AppError from "../../errors/appError";
 import { Request } from "express";
 import { fileUploader } from "../../helpers/fileUpload";
 import { IOptions, paginationHelper } from "../../helpers/paginationHelper";
+import { Role } from "@prisma/client";
 
 interface UpdateTravelPlanArgs {
   userId: number;
@@ -132,7 +133,7 @@ const updateTravelPlan = async ({
   if (!plan) {
     throw new AppError(httpStatus.NOT_FOUND, "Travel plan not found");
   }
-  if (plan.userId !== userId) {
+ if (plan.userId !== userId && Role.ADMIN !== "ADMIN") {
     throw new AppError(httpStatus.FORBIDDEN, "You cannot edit this plan");
   }
   if (payload.startDate) payload.startDate = new Date(payload.startDate);
