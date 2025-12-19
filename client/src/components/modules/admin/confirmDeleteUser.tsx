@@ -11,15 +11,16 @@ import {
   AlertDialogDescription,
   AlertDialogAction,
   AlertDialogCancel,
-} from "@/components/ui/alert-dialog"; 
+} from "@/components/ui/alert-dialog";
 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { getCookie } from "@/service/auth/tokenHandler";
 
 interface ConfirmDeleteModalProps {
   userId: number;
   userName: string;
-  onDeleted: () => void; 
+  onDeleted: () => void;
 }
 
 export default function ConfirmDeleteModal({
@@ -28,12 +29,15 @@ export default function ConfirmDeleteModal({
   onDeleted,
 }: ConfirmDeleteModalProps) {
   const handleDelete = async () => {
+    const token = await getCookie("accessToken");
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/user/${userId}`,
         {
           method: "DELETE",
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 

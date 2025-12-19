@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import UpdateModal from "./updateTravelPlanModal";
 import DeleteTravelPlanDialog from "./deleteTravelPlanModal";
+import { getCookie } from "@/service/auth/tokenHandler";
 
 interface MatchRequest {
   id: number;
@@ -45,7 +46,6 @@ interface TravelPlan {
 }
 
 export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
-  console.log(plans)
   const [selectedPlan, setSelectedPlan] = useState<TravelPlan | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -59,11 +59,15 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
 
   const handleRequestAction = async (requestId: number, action: "ACCEPTED" | "REJECTED") => {
     try {
+      const token = await getCookie("accessToken");
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/match-requests/${requestId}`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({ action }),
           credentials: "include",
         }
@@ -101,6 +105,7 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
     if (!selectedPlan) return;
 
     try {
+      const token = await getCookie("accessToken");
       const raw = data.get("data") as string;
       const parsed = JSON.parse(raw);
 
@@ -111,16 +116,20 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
       if (file instanceof File) {
         formDataToSend.append("file", file);
       }
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/${selectedPlan.id}`,
         {
           method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: formDataToSend,
           credentials: "include",
           cache: "no-store",
         }
       );
-      console.log(res,"res")
+
       if (!res.ok) {
         const errText = await res.text();
         throw new Error(errText || "Update failed");
@@ -150,12 +159,28 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
   };
 
   const deleteTravelPlan = async (id: number) => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/${id}`,
-      { method: "DELETE", credentials: "include" }
-    );
-    if (!res.ok) throw new Error("Failed to delete");
-    setPlansList((prev) => prev.filter((plan) => plan.id !== id));
+    try {
+      const token = await getCookie("accessToken");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/${id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include",
+        }
+      );
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || "Failed to delete travel plan");
+      }
+
+      setPlansList((prev) => prev.filter((plan) => plan.id !== id));
+      toast.success("Travel plan deleted successfully!");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to delete travel plan");
+    }
   };
 
   return (

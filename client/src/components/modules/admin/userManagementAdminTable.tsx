@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
 import ConfirmDeleteModal from "./confirmDeleteUser";
+import { getCookie } from "@/service/auth/tokenHandler";
 
 export default function UserTableClient({ initialUsers }: any) {
   const [users, setUsers] = useState(initialUsers || []);
@@ -16,21 +17,24 @@ export default function UserTableClient({ initialUsers }: any) {
 
   const toggleRole = async (userId: number, currentRole: string) => {
     const newRole = currentRole === "ADMIN" ? "USER" : "ADMIN";
+    const token = await getCookie("accessToken")
 
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/users/${userId}/role`,
         {
           method: "PATCH",
-          credentials: "include",
+        
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, 
           },
           body: JSON.stringify({ role: newRole }),
         }
       );
 
       const data = await res.json();
+  
 
       if (data.success) {
         setUsers((prev: any[]) =>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { User } from "@/components/types/user";
+import { getCookie } from "@/service/auth/tokenHandler";
 
 interface Payment {
   id: number;
@@ -21,15 +22,18 @@ interface PaymentTableClientProps {
 
 export default function PaymentTableClient({ initialPayments }: PaymentTableClientProps) {
   const [payments, setPayments] = useState(initialPayments || []);
-  console.log(payments)
+  
 
   const markSuccess = async (paymentId: number) => {
+    const token = await getCookie("accessToken")
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/users/${paymentId}/updatePayment`,
         {
           method: "PATCH",
-          credentials: "include",
+          headers:{
+             Authorization: `Bearer ${token}`,
+          }
         }
       );
 

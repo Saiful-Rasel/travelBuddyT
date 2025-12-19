@@ -5,6 +5,7 @@ import { User } from "@/components/types/user";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
+import { getCookie } from "@/service/auth/tokenHandler";
 
 interface TravelPlanDetailsClientProps {
   plan: {
@@ -48,19 +49,21 @@ export default function TravelPlanDetailsClient({
   const [loading, setLoading] = useState(false);
 
   const handleSendRequest = async () => {
-    if (!currentUser)
-      return toast.error("You must be logged in to send a request");
+    if (!currentUser) return toast.error("You must be logged in to send a request");
 
     setLoading(true);
 
     try {
+      const token = await getCookie("accessToken");
+
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/match-requests`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/match-requests`,
         {
           method: "POST",
-          credentials: "include", // include cookies if auth depends on them
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             userId: currentUser.id,
@@ -84,29 +87,20 @@ export default function TravelPlanDetailsClient({
     }
   };
 
+  const formatDate = (dateStr: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateStr).toLocaleDateString(undefined, options);
+  };
+
   return (
     <section className="min-h-screen bg-zinc-50 dark:bg-black py-12 px-4">
-      {/* Toaster placement */}
-
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-4">{plan.title}</h1>
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          {plan.description}
-        </p>
-
-        <p>
-          <strong>Destination:</strong> {plan.destination}
-        </p>
-        <p>
-          <strong>Travel Dates:</strong> {plan.startDate} - {plan.endDate}
-        </p>
-        <p>
-          <strong>Budget:</strong> {plan.minBudget} - {plan.maxBudget}
-        </p>
-        <p>
-          <strong>Travel Type:</strong> {plan.travelType}
-        </p>
-
+        <p className="text-gray-700 dark:text-gray-300 mb-4">{plan.description}</p>
+        <p><strong>Destination:</strong> {plan.destination}</p>
+        <p><strong>Travel Dates:</strong> {formatDate(plan.startDate)} - {formatDate(plan.endDate)}</p>
+        <p><strong>Budget:</strong> {plan.minBudget} - {plan.maxBudget}</p>
+        <p><strong>Travel Type:</strong> {plan.travelType}</p>
         {plan.image && (
           <Image
             src={plan.image}
@@ -116,43 +110,32 @@ export default function TravelPlanDetailsClient({
             className="mt-4 w-full rounded-lg object-cover"
           />
         )}
-
         {plan.itinerary?.length > 0 && (
           <div className="mt-6">
             <h2 className="text-2xl font-semibold mb-2">Itinerary</h2>
             <ul className="list-disc pl-5">
               {plan.itinerary.map((item) => (
-                <li key={item.day}>
-                  <strong>Day {item.day}:</strong> {item.activity}
-                </li>
+                <li key={item.day}><strong>Day {item.day}:</strong> {item.activity}</li>
               ))}
             </ul>
           </div>
         )}
-
         <div className="mt-6">
           <h2 className="text-2xl font-semibold mb-2">Created By</h2>
           <p>{plan.user.fullName}</p>
         </div>
-
         {plan.reviews && plan.reviews.length > 0 && (
           <div className="mt-6">
             <h2 className="text-2xl font-semibold mb-2">Reviews</h2>
             <ul className="space-y-2">
               {plan.reviews.map((review) => (
-                <li
-                  key={review.id}
-                  className="p-2 bg-gray-100 dark:bg-gray-800 rounded"
-                >
-                  <strong>{review.reviewer.fullName}</strong>: {review.comment}{" "}
-                  (⭐ {review.rating})
+                <li key={review.id} className="p-2 bg-gray-100 dark:bg-gray-800 rounded">
+                  <strong>{review.reviewer.fullName}</strong>: {review.comment} (⭐ {review.rating})
                 </li>
               ))}
             </ul>
           </div>
         )}
-
-        {/* Send Request Section */}
         <div className="mt-8 p-4 border rounded-lg bg-white dark:bg-gray-900">
           <h2 className="text-2xl font-semibold mb-2">Join this Trip?</h2>
           <textarea

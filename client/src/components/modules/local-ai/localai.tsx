@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { User } from "@/components/types/user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { getCookie } from "@/service/auth/tokenHandler";
 
 interface Props {
   user?: User | null;
@@ -42,15 +43,15 @@ export default function PremiumItineraryClient({ user, amount = 999 }: Props) {
 
     if (!user.premium) {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/create`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ amount }),
-          }
-        );
+        const token = await getCookie("accessToken")
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/create`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token }`,
+          },
+          body: JSON.stringify({ amount }),
+        });
 
         if (!res.ok) {
           const text = await res.text();
@@ -84,15 +85,15 @@ export default function PremiumItineraryClient({ user, amount = 999 }: Props) {
 
     setLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/ai/itinerary`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ destination }),
-          credentials: "include",
-        }
-      );
+        const token = await getCookie("accessToken")
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/ai/itinerary`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token || ""}`,
+        },
+        body: JSON.stringify({ destination }),
+      });
 
       if (!res.ok) {
         const text = await res.text();
@@ -114,15 +115,10 @@ export default function PremiumItineraryClient({ user, amount = 999 }: Props) {
   };
 
   if (!user || !user.premium) {
-    // Premium unlock UI
     return (
       <div className="h-[30vh] flex flex-col items-center justify-center rounded-xl bg-blue-600 p-4">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-          AI Travel Itinerary
-        </h1>
-        <p className="text-white mb-2">
-          {user ? `Hello, ${user.fullName}` : "Login to access the service"}
-        </p>
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">AI Travel Itinerary</h1>
+        <p className="text-white mb-2">{user ? `Hello, ${user.fullName}` : "Login to access the service"}</p>
         <p className="text-white mb-4">Premium service fee: {amount} BDT</p>
         <Button
           size="lg"
@@ -135,12 +131,10 @@ export default function PremiumItineraryClient({ user, amount = 999 }: Props) {
     );
   }
 
-  // Premium user → AI itinerary UI
   return (
     <div className="max-w-3xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Generate Your Travel Itinerary</h1>
 
-      {/* Destination input */}
       <form className="flex gap-2 mb-4" onSubmit={handleGenerateItinerary}>
         <Input
           placeholder="Enter destination"
@@ -153,17 +147,13 @@ export default function PremiumItineraryClient({ user, amount = 999 }: Props) {
         </Button>
       </form>
 
-      {/* Display itinerary */}
       {itinerary && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold mb-2">
             Destination: {itinerary.destination} ({itinerary.days} days)
           </h2>
           {Object.entries(itinerary.itinerary).map(([day, info]) => (
-            <div
-              key={day}
-              className="border rounded-lg p-4 bg-gray-50 shadow-sm"
-            >
+            <div key={day} className="border rounded-lg p-4 bg-gray-50 shadow-sm">
               <h3 className="font-semibold mb-2 capitalize">{day}</h3>
               <ul className="list-disc list-inside space-y-1">
                 <li>

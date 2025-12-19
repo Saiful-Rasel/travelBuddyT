@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import PaymentTableClient from "@/components/modules/admin/paymentTable";
 import { getCookie } from "@/service/auth/tokenHandler";
-
 
 interface Payment {
   id: number;
@@ -12,9 +12,13 @@ interface Payment {
 }
 
 export default async function PaymentsPage() {
-    const token = await getCookie("accessToken")
-  try {
+  const token = await getCookie("accessToken");
 
+  if (!token) {
+    return <div className="text-center text-red-500">Not authorized</div>;
+  }
+
+  try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/payments`, {
       cache: "no-store",
       headers: {
@@ -22,12 +26,22 @@ export default async function PaymentsPage() {
       },
     });
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch payments");
+    let payments: Payment[] = [];
+
+    if (res.ok) {
+      const data = await res.json();
+      payments = Array.isArray(data.data) ? data.data : [];
+    } else {
+      const errText = await res.text();
+      console.error("Payments API error:", errText);
+      // optional: 404 er khetre empty array
+      if (!errText.includes("No payments found")) throw new Error("Failed to fetch payments");
+      payments = [];
     }
 
-    const data = await res.json();
-    const payments: Payment[] = data.data || [];
+    if (payments.length === 0) {
+      return <div className="text-center text-gray-500 py-10">No payments available</div>;
+    }
 
     return (
       <div className="p-5">
@@ -35,7 +49,7 @@ export default async function PaymentsPage() {
         <PaymentTableClient initialPayments={payments} />
       </div>
     );
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
     return <div className="text-center text-red-500">Failed to load payments</div>;
   }

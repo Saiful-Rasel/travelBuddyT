@@ -4,7 +4,7 @@ import { getCookie } from "@/service/auth/tokenHandler";
 export default async function UserPage() {
   const token = await getCookie("accessToken")
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/users?limit=1000`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/users?limit=1000`,
     {
       cache: "no-store",
       headers: {
@@ -13,6 +13,7 @@ export default async function UserPage() {
     }
   );
   const data = await res.json();
+ 
 
   return (
     <div className="p-5">
