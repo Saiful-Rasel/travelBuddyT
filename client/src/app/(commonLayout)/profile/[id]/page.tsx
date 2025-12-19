@@ -14,7 +14,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const loggedInUser =  (await getUserInfo()) || undefined
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/${profileUserId}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/${profileUserId}`,
     { cache: "no-store" }
   );
 

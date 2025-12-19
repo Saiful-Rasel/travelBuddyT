@@ -13,6 +13,7 @@ interface NavbarClientProps {
 }
 
 export default function NavbarClient({ currentUser }: NavbarClientProps) {
+  
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 

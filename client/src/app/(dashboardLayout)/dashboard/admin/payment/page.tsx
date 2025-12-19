@@ -15,7 +15,7 @@ export default async function PaymentsPage() {
     const token = await getCookie("accessToken")
   try {
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/payments`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/payments`, {
       cache: "no-store",
       headers: {
         Authorization: `Bearer ${token}`,

@@ -19,7 +19,7 @@ export default function UserTableClient({ initialUsers }: any) {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/users/${userId}/role`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/users/${userId}/role`,
         {
           method: "PATCH",
           credentials: "include",

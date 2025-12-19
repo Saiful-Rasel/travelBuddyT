@@ -8,7 +8,7 @@ export default async function FindBuddyPage() {
   // Fetch first page only for server-side render
   const limit = 50;
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/user?page=1&limit=${limit}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user?page=1&limit=${limit}`,
     { cache: "no-store" }
   );
 

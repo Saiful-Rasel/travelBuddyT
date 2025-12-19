@@ -45,7 +45,7 @@ export default async function TravelPlanDetailsPage({ params }: PageProps) {
   const planId = unwrappedParams.id;
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/${planId}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/${planId}`,
     { cache: "no-store" }
   );
 

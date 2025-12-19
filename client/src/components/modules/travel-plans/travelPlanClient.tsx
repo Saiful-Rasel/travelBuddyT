@@ -3,7 +3,7 @@
 import TravelPlanCard from "@/components/modules/travel-plans/travelPlanCard";
 import { TravelPlan } from "@/components/types/travelPlan";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface Props {
   travelPlans: TravelPlan[];
@@ -25,7 +25,7 @@ export default function TravelPlansClient({ travelPlans, meta }: Props) {
 
   const fetchPageData = async (page: number) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/feed?page=${page}&limit=${meta.limit}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/feed?page=${page}&limit=${meta.limit}`,
       { cache: "no-store" }
     );
     const result = await res.json();

@@ -40,7 +40,7 @@ export default function CreateTravelPlanForm({onSuccess}:CreateTravelPlanFormPro
     if (state && !state.success && state.message) {
       toast.error(state.message);
     }
-  }, [state]);
+  }, [state,onSuccess]);
 
   const handleItineraryChange = (index: number, value: string) => {
     const newItinerary = [...itinerary];

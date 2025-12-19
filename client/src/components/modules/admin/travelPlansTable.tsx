@@ -54,7 +54,7 @@ export default function TravelPlansTable({ travelPlans }: TravelPlansTableProps)
       const file = data.get("file");
       if (file instanceof File) formDataToSend.append("file", file);
 
-      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/${selectedPlan.id}`;
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/${selectedPlan.id}`;
       const res = await fetch(url, {
         method: "PATCH",
         body: formDataToSend,
@@ -80,8 +80,8 @@ export default function TravelPlansTable({ travelPlans }: TravelPlansTableProps)
   const handleBlockUnblock = async (plan: TravelPlan) => {
     try {
       const url = plan.isActive
-        ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/travel-plans/${plan.id}/block`
-        : `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/travel-plans/${plan.id}/unblock`;
+        ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/travel-plans/${plan.id}/block`
+        : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/travel-plans/${plan.id}/unblock`;
 
       const res = await fetch(url, { method: "PATCH", credentials: "include", cache: "no-store" });
       if (!res.ok) throw new Error(await res.text() || "Action failed");
@@ -99,7 +99,7 @@ export default function TravelPlansTable({ travelPlans }: TravelPlansTableProps)
   // ================= DELETE =================
   const handleDelete = async (id: number) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/${id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/${id}`, {
         method: "DELETE",
         credentials: "include",
         cache: "no-store",

@@ -68,7 +68,7 @@ export const createTravelPlan = async (currentState: any, formData: FormData) =>
     }
 
     // Send request
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans`, {
       method: "POST",
       headers: {
         Cookie: `accessToken=${token}`,
@@ -84,7 +84,7 @@ export const createTravelPlan = async (currentState: any, formData: FormData) =>
     } catch {
       result = {};
     }
-    console.log(result, "result");
+ 
 
     if (!res.ok) {
       throw new Error(result.message || "Create failed");

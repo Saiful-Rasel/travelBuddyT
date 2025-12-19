@@ -26,7 +26,7 @@ export default function PaymentTableClient({ initialPayments }: PaymentTableClie
   const markSuccess = async (paymentId: number) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/users/${paymentId}/updatePayment`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/users/${paymentId}/updatePayment`,
         {
           method: "PATCH",
           credentials: "include",

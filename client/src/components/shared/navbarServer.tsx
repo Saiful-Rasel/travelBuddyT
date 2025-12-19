@@ -10,9 +10,10 @@ export default async function NavbarServer() {
   try {
     const accessToken = await getCookie("accessToken");
 
+
     if (accessToken) {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`,
         {
           cache: "no-store",
           headers: {
@@ -23,6 +24,7 @@ export default async function NavbarServer() {
       );
       if (res.ok) {
         const data = await res.json();
+      
 
         if (data.success && data.data) {
           user = data.data;

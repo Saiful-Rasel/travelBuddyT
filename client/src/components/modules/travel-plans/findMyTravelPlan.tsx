@@ -45,6 +45,7 @@ interface TravelPlan {
 }
 
 export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
+  console.log(plans)
   const [selectedPlan, setSelectedPlan] = useState<TravelPlan | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -59,7 +60,7 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
   const handleRequestAction = async (requestId: number, action: "ACCEPTED" | "REJECTED") => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/match-requests/${requestId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/match-requests/${requestId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -110,9 +111,8 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
       if (file instanceof File) {
         formDataToSend.append("file", file);
       }
-
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/${selectedPlan.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/${selectedPlan.id}`,
         {
           method: "PATCH",
           body: formDataToSend,
@@ -120,7 +120,7 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
           cache: "no-store",
         }
       );
-
+      console.log(res,"res")
       if (!res.ok) {
         const errText = await res.text();
         throw new Error(errText || "Update failed");
@@ -151,7 +151,7 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
 
   const deleteTravelPlan = async (id: number) => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/${id}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/${id}`,
       { method: "DELETE", credentials: "include" }
     );
     if (!res.ok) throw new Error("Failed to delete");

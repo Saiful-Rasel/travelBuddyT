@@ -48,7 +48,7 @@ export default async function MySentRequestsPage() {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/match-requests/my-sent`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/match-requests/my-sent`,
       {
         method: "GET",
         headers: {

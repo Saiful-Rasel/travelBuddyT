@@ -45,7 +45,7 @@ export const registerUser = async (
 
     const newFormData = new FormData();
     newFormData.append("data", JSON.stringify(registerData));
-    const res = await fetch(`http://localhost:8000/api/user/register`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/register`, {
       method: "POST",
       body: newFormData,
     });

@@ -28,7 +28,7 @@ export default async function TravelPlansPage({ searchParams }: PageProps) {
   const limit = 8
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/feed?page=${page}&limit=${limit}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/feed?page=${page}&limit=${limit}`,
     {
       cache: "no-store",
     }
@@ -39,6 +39,7 @@ export default async function TravelPlansPage({ searchParams }: PageProps) {
   }
 
   const result: TravelPlansApiResponse = await res.json();
+
 
 
   return (

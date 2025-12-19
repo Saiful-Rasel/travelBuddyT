@@ -68,7 +68,7 @@ export default function UpdateProfileModal({ user, onUpdate }: Props) {
       formData.append("data", JSON.stringify(dataPayload));
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/${user.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/${user.id}`,
         { method: "PATCH", body: formData }
       );
 

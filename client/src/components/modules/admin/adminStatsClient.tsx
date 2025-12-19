@@ -51,7 +51,7 @@ export default function AdminStats() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/stats`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/stats`, {
       method: "GET",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

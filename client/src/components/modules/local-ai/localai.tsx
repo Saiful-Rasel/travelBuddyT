@@ -43,7 +43,7 @@ export default function PremiumItineraryClient({ user, amount = 999 }: Props) {
     if (!user.premium) {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/payment/create`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/create`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -85,7 +85,7 @@ export default function PremiumItineraryClient({ user, amount = 999 }: Props) {
     setLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/ai/itinerary`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/ai/itinerary`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

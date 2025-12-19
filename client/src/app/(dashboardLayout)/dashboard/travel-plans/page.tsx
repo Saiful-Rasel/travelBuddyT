@@ -42,7 +42,7 @@ export default async function MyTravelPlansPage() {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/my`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/my`,
       {
         method: "GET",
         headers: {

@@ -30,7 +30,7 @@ export default function ConfirmDeleteModal({
   const handleDelete = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/admin/user/${userId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/admin/user/${userId}`,
         {
           method: "DELETE",
           credentials: "include",

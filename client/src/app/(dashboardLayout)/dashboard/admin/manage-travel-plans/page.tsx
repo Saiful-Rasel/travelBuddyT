@@ -5,7 +5,7 @@ import { getCookie } from "@/service/auth/tokenHandler";
 async function getTravelPlans() {
   const token = await getCookie("accessToken");
 
-  const res = await fetch("http://localhost:8000/api/travel-plans", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans`, {
     cache: "no-store",
     headers: {
       Authorization: `Bearer ${token}`,

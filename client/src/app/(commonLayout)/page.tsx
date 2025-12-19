@@ -5,7 +5,7 @@ import { getUserInfo } from "@/service/auth/getUserInfo";
 export default async function Home() {
   const user = await getUserInfo()
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/travel-plans/feed`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/feed`,
     {
       cache: "no-store",
     }
