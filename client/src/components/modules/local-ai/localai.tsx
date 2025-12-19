@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
 import { useState, useEffect, FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -46,7 +47,6 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
     const updatePremiumStatus = async () => {
       if (tranId && currentUser && !currentUser.premium) {
         try {
-          // Fetch updated user data or new token from backend
           const token = await getCookie("accessToken");
           const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
             cache: "no-store",
@@ -143,65 +143,62 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
     }
   };
 
-  // Loading state
-  if (!currentUser) {
-    return <p className="text-center py-10 text-gray-600 dark:text-gray-300">Loading...</p>;
-  }
-
-  // Premium unlock prompt
-  if (!currentUser.premium) {
-    return (
-      <div className="h-[30vh] flex flex-col items-center justify-center rounded-xl bg-blue-600 p-4">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">AI Travel Itinerary</h1>
-        <p className="text-white mb-2">Hello, {currentUser.fullName}</p>
-        <p className="text-white mb-4">Premium service fee: {amount} BDT</p>
-        <Button
-          size="lg"
-          className="bg-white text-black hover:bg-gray-100 rounded-lg"
-          onClick={handleUnlock}
-        >
-          Unlock AI Service
-        </Button>
-      </div>
-    );
-  }
-
-  // Premium user view
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Generate Your Travel Itinerary</h1>
-      <form className="flex gap-2 mb-4" onSubmit={handleGenerateItinerary}>
-        <Input
-          placeholder="Enter destination"
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-          disabled={loading}
-          className="dark:bg-gray-700 dark:text-white"
-        />
-        <Button type="submit" disabled={loading}>
-          {loading ? "Generating..." : "Generate"}
-        </Button>
-      </form>
+      <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">AI Travel Itinerary</h1>
 
-      {itinerary && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-            Destination: {itinerary.destination} ({itinerary.days} days)
-          </h2>
-          {Object.entries(itinerary.itinerary).map(([day, info]) => (
-            <div
-              key={day}
-              className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 shadow-sm"
-            >
-              <h3 className="font-semibold mb-2 capitalize text-gray-900 dark:text-white">{day}</h3>
-              <ul className="list-disc list-inside space-y-1 text-gray-800 dark:text-gray-300">
-                <li><strong>Morning:</strong> {info.morning}</li>
-                <li><strong>Afternoon:</strong> {info.afternoon}</li>
-                <li><strong>Evening:</strong> {info.evening}</li>
-                <li><strong>Estimated Cost:</strong> {info.estimatedCost}</li>
-              </ul>
+      {/* Premium check */}
+      {currentUser?.premium ? (
+        <>
+          <form className="flex gap-2 mb-4" onSubmit={handleGenerateItinerary}>
+            <Input
+              placeholder="Enter destination"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              disabled={loading}
+              className="dark:bg-gray-700 dark:text-white"
+            />
+            <Button type="submit" disabled={loading}>
+              {loading ? "Generating..." : "Generate"}
+            </Button>
+          </form>
+
+          {itinerary && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+                Destination: {itinerary.destination} ({itinerary.days} days)
+              </h2>
+              {Object.entries(itinerary.itinerary).map(([day, info]) => (
+                <div
+                  key={day}
+                  className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 shadow-sm"
+                >
+                  <h3 className="font-semibold mb-2 capitalize text-gray-900 dark:text-white">{day}</h3>
+                  <ul className="list-disc list-inside space-y-1 text-gray-800 dark:text-gray-300">
+                    <li><strong>Morning:</strong> {info.morning}</li>
+                    <li><strong>Afternoon:</strong> {info.afternoon}</li>
+                    <li><strong>Evening:</strong> {info.evening}</li>
+                    <li><strong>Estimated Cost:</strong> {info.estimatedCost}</li>
+                  </ul>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+        </>
+      ) : (
+        // Always show unlock UI if not premium
+        <div className="h-[30vh] flex flex-col items-center justify-center rounded-xl bg-blue-600 p-4">
+          <p className="text-white mb-2">
+            {currentUser ? `Hello, ${currentUser.fullName}` : "Unlock AI Travel Itinerary"}
+          </p>
+          <p className="text-white mb-4">Premium service fee: {amount} BDT</p>
+          <Button
+            size="lg"
+            className="bg-white text-black hover:bg-gray-100 rounded-lg"
+            onClick={handleUnlock}
+          >
+            Unlock AI Service
+          </Button>
         </div>
       )}
     </div>
