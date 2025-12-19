@@ -57,11 +57,11 @@ router.post("/success", async (req: Request, res: Response) => {
     });
 
     return res.redirect(
-      `http://localhost:3000/payment/success?tran_id=${tranId}`
+      `https://travel-buddy-t.vercel.app/payment/success?tran_id=${tranId}`
     );
   } catch (error) {
     console.log(error);
-    return res.redirect("http://localhost:3000/payment/fail");
+    return res.redirect("https://travel-buddy-t.vercel.app/payment/fail");
   }
 });
 
@@ -74,7 +74,7 @@ router.post("/fail", async (req: Request, res: Response) => {
     data: { status: PaymentStatus.FAILED },
   });
 
-  res.redirect( `http://localhost:3000/payment/fail?tran_id=${tranId}`);
+  res.redirect( `https://travel-buddy-t.vercel.app/payment/fail?tran_id=${tranId}`);
 });
 
 router.post("/cancel", async (req: Request, res: Response) => {
@@ -86,7 +86,7 @@ router.post("/cancel", async (req: Request, res: Response) => {
     data: { status: PaymentStatus.CANCELLED },
   });
 
-  res.redirect(`http://localhost:3000/payment/cancel?tran_id=${tranId}`);
+  res.redirect(`https://travel-buddy-t.vercel.app/payment/cancel?tran_id=${tranId}`);
 });
 
 export default router;
