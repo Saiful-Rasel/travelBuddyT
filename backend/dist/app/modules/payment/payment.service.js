@@ -36,7 +36,7 @@ const createPayment = (paymentData, user) => __awaiter(void 0, void 0, void 0, f
     const data = {
         total_amount: amount,
         currency: "BDT",
-        tran_id: tranId, // use unique tran_id for each api call
+        tran_id: tranId, 
         success_url: `http://localhost:8000/api/payment/success?tran_id=${tranId}`,
         fail_url: `http://localhost:8000/api/payment/fail?tran_id=${tranId}`,
         cancel_url: `http://localhost:8000/api/payment/cancel?tran_id=${tranId}`,
