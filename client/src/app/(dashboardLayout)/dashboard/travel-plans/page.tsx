@@ -1,39 +1,8 @@
 import MyTravelPlansClient from "@/components/modules/travel-plans/findMyTravelPlan";
 
 import { getCookie } from "@/service/auth/tokenHandler";
-export interface MatchRequest {
-  id: number;
-  senderId: number;
-  receiverId: number;
-  travelPlanId: number;
-  message?: string;
-  status: string;
-  sender: {
-    id: number;
-    fullName: string;
-    profileImage?: string;
-  };
-  receiver: {
-    id: number;
-    fullName: string;
-    profileImage?: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-interface TravelPlan {
-  id: number;
-  title: string;
-  destination: string;
-  startDate: string;
-  endDate: string;
-  minBudget?: number;
-  maxBudget?: number;
-  travelType: string;
-  description?: string;
-  image?: string | null;
-  matchRequests: MatchRequest[];
-}
+import { TravelPlan } from "../my-request/page";
+
 
 export default async function MyTravelPlansPage() {
   const token = await getCookie("accessToken");

@@ -3,7 +3,16 @@ export interface Reviewer {
   fullName: string;
   profileImage?: string | null;
 }
-
+interface MatchRequest {
+  id: number;
+  message?: string;
+  status: "PENDING" | "ACCEPTED" | "REJECTED";
+  sender: {
+    id: number;
+    fullName: string;
+    profileImage?: string;
+  };
+}
 export interface Review {
   id: number;
   rating: number;
@@ -22,5 +31,6 @@ export interface TravelPlan {
   description?: string;
   image?: string | null;
   reviews?: Review[];
-  isActive:boolean
+  isActive:boolean;
+   matchRequests?: MatchRequest[];
 }

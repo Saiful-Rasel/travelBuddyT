@@ -6,6 +6,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Metadata } from "next";
 import { Toaster } from "sonner";
+export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "TravelBuddy",
