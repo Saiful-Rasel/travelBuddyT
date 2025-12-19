@@ -51,11 +51,11 @@ router.post("/success", (req, res) => __awaiter(void 0, void 0, void 0, function
             sameSite: "none",
             maxAge: 1000 * 60 * 60 * 24 * 90,
         });
-        return res.redirect(`http://localhost:3000/payment/success?tran_id=${tranId}`);
+        return res.redirect(`https://travel-buddy-t.vercel.app/payment/success?tran_id=${tranId}`);
     }
     catch (error) {
         console.log(error);
-        return res.redirect("http://localhost:3000/payment/fail");
+        return res.redirect("https://travel-buddy-t.vercel.app/payment/fail");
     }
 }));
 router.post("/fail", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -66,7 +66,7 @@ router.post("/fail", (req, res) => __awaiter(void 0, void 0, void 0, function* (
         where: { tranId },
         data: { status: client_1.PaymentStatus.FAILED },
     });
-    res.redirect(`http://localhost:3000/payment/fail?tran_id=${tranId}`);
+    res.redirect(`https://travel-buddy-t.vercel.app/payment/fail?tran_id=${tranId}`);
 }));
 router.post("/cancel", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const tranId = req.query.tran_id;
@@ -76,6 +76,6 @@ router.post("/cancel", (req, res) => __awaiter(void 0, void 0, void 0, function*
         where: { tranId },
         data: { status: client_1.PaymentStatus.CANCELLED },
     });
-    res.redirect(`http://localhost:3000/payment/cancel?tran_id=${tranId}`);
+    res.redirect(`https://travel-buddy-t.vercel.app/payment/cancel?tran_id=${tranId}`);
 }));
 exports.default = router;

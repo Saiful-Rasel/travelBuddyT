@@ -23,10 +23,6 @@ app.use((0, cors_1.default)({
     ],
     credentials: true,
 }));
-app.use((req, res, next) => {
-    console.log("Incoming request:", req.method, req.originalUrl);
-    next();
-});
 app.get("/", (req, res) => {
     res.send(" Travel Buddy Started Successfully");
 });
