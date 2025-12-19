@@ -30,7 +30,8 @@ export default {
     ssl: {
         store_id: process.env.STORE_ID,
         store_password: process.env.STORE_PASSWORD
-    }
+    },
+    backend_url:process.env.BACKEND_URL
 
 };
 

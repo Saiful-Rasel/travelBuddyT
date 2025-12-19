@@ -21,13 +21,16 @@ const config_1 = __importDefault(require("../../config"));
 const SSLCommerzPayment = require("sslcommerz-lts");
 const store_id = config_1.default.ssl.store_id;
 const store_passwd = config_1.default.ssl.store_password;
-const is_live = false;
+const is_live = false; // false = sandbox, true = live
 const createPayment = (paymentData, user) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!user)
+        throw new Error("User not found");
+    console.log(user, "user");
     const { amount } = paymentData;
     const tranId = (0, uuid_1.v4)();
     yield prisma_1.default.payment.create({
         data: {
-            userId: user === null || user === void 0 ? void 0 : user.id,
+            userId: user.id,
             tranId,
             amount: amount,
             status: client_1.PaymentStatus.PENDING,
@@ -36,14 +39,14 @@ const createPayment = (paymentData, user) => __awaiter(void 0, void 0, void 0, f
     const data = {
         total_amount: amount,
         currency: "BDT",
-        tran_id: tranId, 
-        success_url: `http://localhost:8000/api/payment/success?tran_id=${tranId}`,
-        fail_url: `http://localhost:8000/api/payment/fail?tran_id=${tranId}`,
-        cancel_url: `http://localhost:8000/api/payment/cancel?tran_id=${tranId}`,
-        ipn_url: "http://localhost:3030/ipn",
+        tran_id: tranId,
+        success_url: `${config_1.default.backend_url}/api/payment/success?tran_id=${tranId}`,
+        fail_url: `${config_1.default.backend_url}/api/payment/fail?tran_id=${tranId}`,
+        cancel_url: `${config_1.default.backend_url}/api/payment/cancel?tran_id=${tranId}`,
+        ipn_url: `${config_1.default.backend_url}/api/payment/ipn`,
         shipping_method: "Courier",
-        product_name: "Computer.",
-        product_category: "Electronic",
+        product_name: "TravelBuddy Service",
+        product_category: "Service",
         product_profile: "general",
         cus_name: user.name,
         cus_email: user.email,
@@ -53,9 +56,9 @@ const createPayment = (paymentData, user) => __awaiter(void 0, void 0, void 0, f
         cus_state: "Dhaka",
         cus_postcode: "1000",
         cus_country: "Bangladesh",
-        cus_phone: "01711111111",
+        cus_phone: user.phone || "01711111111",
         cus_fax: "01711111111",
-        ship_name: "Customer Name",
+        ship_name: user.fullName,
         ship_add1: "Dhaka",
         ship_add2: "Dhaka",
         ship_city: "Dhaka",
@@ -65,6 +68,9 @@ const createPayment = (paymentData, user) => __awaiter(void 0, void 0, void 0, f
     };
     const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
     const apiResponse = yield sslcz.init(data);
+    if (!(apiResponse === null || apiResponse === void 0 ? void 0 : apiResponse.GatewayPageURL)) {
+        throw new Error("Payment URL not received from SSLCommerz");
+    }
     return {
         paymentUrl: apiResponse.GatewayPageURL,
         tranId,

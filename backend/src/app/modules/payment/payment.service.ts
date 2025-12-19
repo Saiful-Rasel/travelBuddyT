@@ -12,6 +12,7 @@ const is_live = false; // false = sandbox, true = live
 
 const createPayment = async (paymentData: { amount: number }, user: any) => {
   if (!user) throw new Error("User not found");
+  console.log(user,"user")
 
   const { amount } = paymentData;
   const tranId = uuid();
@@ -29,10 +30,10 @@ const createPayment = async (paymentData: { amount: number }, user: any) => {
     total_amount: amount,
     currency: "BDT",
     tran_id: tranId,
-    success_url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/success?tran_id=${tranId}`,
-    fail_url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/fail?tran_id=${tranId}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/cancel?tran_id=${tranId}`,
-    ipn_url: `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/ipn`,
+    success_url: `${config.backend_url}/api/payment/success?tran_id=${tranId}`,
+    fail_url: `${config.backend_url}/api/payment/fail?tran_id=${tranId}`,
+    cancel_url: `${config.backend_url}/api/payment/cancel?tran_id=${tranId}`,
+    ipn_url: `${config.backend_url}/api/payment/ipn`,
     shipping_method: "Courier",
     product_name: "TravelBuddy Service",
     product_category: "Service",
@@ -47,7 +48,7 @@ const createPayment = async (paymentData: { amount: number }, user: any) => {
     cus_country: "Bangladesh",
     cus_phone: user.phone || "01711111111",
     cus_fax: "01711111111",
-    ship_name: user.name,
+    ship_name: user.fullName,
     ship_add1: "Dhaka",
     ship_add2: "Dhaka",
     ship_city: "Dhaka",
@@ -55,9 +56,12 @@ const createPayment = async (paymentData: { amount: number }, user: any) => {
     ship_postcode: 1000,
     ship_country: "Bangladesh",
   };
+  
+  
 
   const sslcz = new (SSLCommerzPayment as any)(store_id, store_passwd, is_live);
   const apiResponse = await sslcz.init(data);
+
 
   if (!apiResponse?.GatewayPageURL) {
     throw new Error("Payment URL not received from SSLCommerz");
