@@ -29,7 +29,13 @@ const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!isCorrectPassword) {
         throw new appError_1.default(http_status_1.default.BAD_REQUEST, "Password is incorrect!");
     }
-    const accessToken = jwtHelper_1.jwtHelper.generateToken({ id: user.id, email: user.email, role: user.role, fullName: user.fullName, premium: user.premium }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
+    const accessToken = jwtHelper_1.jwtHelper.generateToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        fullName: user.fullName,
+        premium: user.premium,
+    }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
     const refreshToken = jwtHelper_1.jwtHelper.generateToken({ email: user.email, role: user.role }, config_1.default.jwt.refresh_token_secret, config_1.default.jwt.refresh_token_expires_in);
     return {
         accessToken,
@@ -140,11 +146,9 @@ const changePassword = (user, payload) => __awaiter(void 0, void 0, void 0, func
 //   });
 // };
 const getMe = (session) => __awaiter(void 0, void 0, void 0, function* () {
-    const accessToken = session.accessToken;
-    const decodedData = jwtHelper_1.jwtHelper.verifyToken(accessToken, config_1.default.jwt.jwt_secret);
     const userData = yield prisma_1.default.user.findUniqueOrThrow({
         where: {
-            email: decodedData.email,
+            email: session === null || session === void 0 ? void 0 : session.email,
         },
     });
     const { id, fullName, email, role, profileImage, bio, travelInterests, visitedCountries, currentLocation, premium, } = userData;

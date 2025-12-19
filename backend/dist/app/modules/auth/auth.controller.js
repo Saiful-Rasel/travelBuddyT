@@ -85,7 +85,7 @@ const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
 //     });
 // });
 const getMe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userSession = req.cookies;
+    const userSession = req.user;
     const result = yield auth_service_1.AuthService.getMe(userSession);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,

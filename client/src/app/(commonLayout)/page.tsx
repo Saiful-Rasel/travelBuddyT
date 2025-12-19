@@ -1,9 +1,22 @@
 import Hero from "@/components/modules/home/hero";
-import { getUserInfo } from "@/service/auth/getUserInfo";
-
+import { getCookie } from "@/service/auth/tokenHandler";
 
 export default async function Home() {
-  const user = await getUserInfo()
+  const token = await getCookie("accessToken")
+ 
+  const authResponse = await fetch(
+  `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`,
+  {
+    cache: "no-store",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token }`, 
+    },
+  }
+);
+
+  const userData = await authResponse.json();
+  const user = userData.data || null;
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/feed`,
     {

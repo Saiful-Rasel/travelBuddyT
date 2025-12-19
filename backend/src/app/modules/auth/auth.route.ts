@@ -9,7 +9,7 @@ import { Role } from '@prisma/client';
 const router = express.Router();
 
 router.get(
-    "/me",
+    "/me",auth(Role.USER,Role.ADMIN),
     AuthController.getMe
 )
 

@@ -22,7 +22,13 @@ const login = async (payload: { email: string; password: string }) => {
   }
 
   const accessToken = jwtHelper.generateToken(
-    { id: user.id, email: user.email, role: user.role, fullName:user.fullName, premium: user.premium },
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      fullName: user.fullName,
+      premium: user.premium,
+    },
     config.jwt.jwt_secret as Secret,
     config.jwt.expires_in as string
   );
@@ -176,15 +182,9 @@ const changePassword = async (user: any, payload: any) => {
 // };
 
 const getMe = async (session: any) => {
-  const accessToken = session.accessToken;
-  const decodedData = jwtHelper.verifyToken(
-    accessToken,
-    config.jwt.jwt_secret as Secret
-  );
-
   const userData = await prisma.user.findUniqueOrThrow({
     where: {
-      email: decodedData.email,
+      email: session?.email,
     },
   });
 

@@ -15,28 +15,50 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const prisma_1 = __importDefault(require("../../shared/prisma"));
 const client_1 = require("@prisma/client");
+const config_1 = __importDefault(require("../../config"));
+const jwtHelper_1 = require("../../helpers/jwtHelper");
 const router = (0, express_1.Router)();
-router.get("/success", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/success", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const tranId = req.query.tran_id;
-        if (!tranId) {
+        if (!tranId)
             return res.status(400).send("tran_id is missing");
-        }
         const payment = yield prisma_1.default.payment.update({
             where: { tranId },
             data: { status: client_1.PaymentStatus.SUCCESS },
         });
-        yield prisma_1.default.user.update({
+        const user = yield prisma_1.default.user.update({
             where: { id: payment.userId },
             data: { premium: true },
+        });
+        const accessToken = jwtHelper_1.jwtHelper.generateToken({
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            fullName: user.fullName,
+            premium: user.premium,
+        }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
+        const refreshToken = jwtHelper_1.jwtHelper.generateToken({ email: user.email, role: user.role }, config_1.default.jwt.refresh_token_secret, config_1.default.jwt.refresh_token_expires_in);
+        res.cookie("accessToken", accessToken, {
+            secure: true,
+            httpOnly: true,
+            sameSite: "none",
+            maxAge: 1000 * 60 * 60,
+        });
+        res.cookie("refreshToken", refreshToken, {
+            secure: true,
+            httpOnly: true,
+            sameSite: "none",
+            maxAge: 1000 * 60 * 60 * 24 * 90,
         });
         return res.redirect(`http://localhost:3000/payment/success?tran_id=${tranId}`);
     }
     catch (error) {
+        console.log(error);
         return res.redirect("http://localhost:3000/payment/fail");
     }
 }));
-router.get("/fail", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/fail", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const tranId = req.query.tran_id;
     if (!tranId)
         return res.status(400).send("tran_id missing");
@@ -46,7 +68,7 @@ router.get("/fail", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     });
     res.redirect(`http://localhost:3000/payment/fail?tran_id=${tranId}`);
 }));
-router.get("/cancel", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/cancel", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const tranId = req.query.tran_id;
     if (!tranId)
         return res.status(400).send("tran_id missing");

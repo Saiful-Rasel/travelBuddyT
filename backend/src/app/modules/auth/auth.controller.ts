@@ -89,8 +89,8 @@ const changePassword = catchAsync(
 //     });
 // });
 
-const getMe = catchAsync(async (req: Request, res: Response) => {
-    const userSession = req.cookies;
+const getMe = catchAsync(async (req: Request & { user?: any }, res: Response) => {
+    const userSession = req.user;
     const result = await AuthService.getMe(userSession);
 
     sendResponse(res, {

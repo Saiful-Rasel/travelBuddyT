@@ -23,11 +23,15 @@ app.use((0, cors_1.default)({
     ],
     credentials: true,
 }));
+app.use((req, res, next) => {
+    console.log("Incoming request:", req.method, req.originalUrl);
+    next();
+});
 app.get("/", (req, res) => {
     res.send(" Travel Buddy Started Successfully");
 });
-app.use("/api", routes_1.default);
 app.use("/api/payment", payment_callback_1.default);
+app.use("/api", routes_1.default);
 app.use(globalErrorHandler_1.default);
 app.use(notFound_1.default);
 exports.default = app;

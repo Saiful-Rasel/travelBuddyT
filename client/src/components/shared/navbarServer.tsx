@@ -18,7 +18,7 @@ export default async function NavbarServer() {
           cache: "no-store",
           headers: {
             "Content-Type": "application/json",
-            Cookie: `accessToken=${accessToken}`,
+            Authorization: `Bearer ${accessToken }`, 
           },
         }
       );

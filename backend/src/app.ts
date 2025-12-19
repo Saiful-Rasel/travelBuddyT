@@ -25,12 +25,17 @@ app.use(
     credentials: true,
   })
 );
+app.use((req, res, next) => {
+  console.log("Incoming request:", req.method, req.originalUrl);
+  next();
+});
 
 app.get("/", (req: Request, res: Response) => {
   res.send(" Travel Buddy Started Successfully");
 });
-app.use("/api", router);
+
 app.use("/api/payment", paymentCallback);
+app.use("/api", router);
 
 app.use(globalErrorHandler);
 app.use(notFound);

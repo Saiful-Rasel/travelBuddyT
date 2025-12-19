@@ -8,37 +8,34 @@ const SSLCommerzPayment = require("sslcommerz-lts");
 
 const store_id = config.ssl.store_id;
 const store_passwd = config.ssl.store_password;
-const is_live = false; // false = sandbox, true = live
+const is_live = false;
 
-const createPayment = async (paymentData: { amount: number }, user: any) => {
-  if (!user) throw new Error("User not found");
-  console.log(user,"user")
 
+
+const createPayment = async (paymentData: any, user: any) => {
   const { amount } = paymentData;
   const tranId = uuid();
-
   await prisma.payment.create({
     data: {
-      userId: user.id,
+      userId: user?.id,
       tranId,
       amount: amount,
       status: PaymentStatus.PENDING,
     },
   });
-
   const data = {
     total_amount: amount,
     currency: "BDT",
     tran_id: tranId,
-    success_url: `${config.backend_url}/api/payment/success?tran_id=${tranId}`,
-    fail_url: `${config.backend_url}/api/payment/fail?tran_id=${tranId}`,
-    cancel_url: `${config.backend_url}/api/payment/cancel?tran_id=${tranId}`,
-    ipn_url: `${config.backend_url}/api/payment/ipn`,
+    success_url: `http://localhost:8000/api/payment/success?tran_id=${tranId}`,
+    fail_url: `http://localhost:8000/api/payment/fail?tran_id=${tranId}`,
+    cancel_url: `http://localhost:8000/api/payment/cancel?tran_id=${tranId}`,
+    ipn_url: "http://localhost:3030/ipn",
     shipping_method: "Courier",
-    product_name: "TravelBuddy Service",
-    product_category: "Service",
+    product_name: "Computer.",
+    product_category: "Electronic",
     product_profile: "general",
-    cus_name: user.name,
+    cus_name: user.fullName,
     cus_email: user.email,
     cus_add1: "Dhaka",
     cus_add2: "Dhaka",
@@ -46,9 +43,9 @@ const createPayment = async (paymentData: { amount: number }, user: any) => {
     cus_state: "Dhaka",
     cus_postcode: "1000",
     cus_country: "Bangladesh",
-    cus_phone: user.phone || "01711111111",
+    cus_phone: "01711111111",
     cus_fax: "01711111111",
-    ship_name: user.fullName,
+    ship_name: "Customer Name",
     ship_add1: "Dhaka",
     ship_add2: "Dhaka",
     ship_city: "Dhaka",
@@ -56,16 +53,11 @@ const createPayment = async (paymentData: { amount: number }, user: any) => {
     ship_postcode: 1000,
     ship_country: "Bangladesh",
   };
-  
-  
+
+  console.log(data)
 
   const sslcz = new (SSLCommerzPayment as any)(store_id, store_passwd, is_live);
   const apiResponse = await sslcz.init(data);
-
-
-  if (!apiResponse?.GatewayPageURL) {
-    throw new Error("Payment URL not received from SSLCommerz");
-  }
 
   return {
     paymentUrl: apiResponse.GatewayPageURL,
