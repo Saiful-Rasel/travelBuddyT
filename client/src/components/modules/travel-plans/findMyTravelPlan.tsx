@@ -53,11 +53,16 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
     plans.map((plan) => ({
       ...plan,
       itinerary: Array.isArray(plan.itinerary) ? plan.itinerary : [],
-      matchRequests: Array.isArray(plan.matchRequests) ? plan.matchRequests : [],
+      matchRequests: Array.isArray(plan.matchRequests)
+        ? plan.matchRequests
+        : [],
     }))
   );
 
-  const handleRequestAction = async (requestId: number, action: "ACCEPTED" | "REJECTED") => {
+  const handleRequestAction = async (
+    requestId: number,
+    action: "ACCEPTED" | "REJECTED"
+  ) => {
     try {
       const token = await getCookie("accessToken");
       const res = await fetch(
@@ -69,7 +74,6 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ action }),
-          credentials: "include",
         }
       );
 
@@ -125,7 +129,6 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
             Authorization: `Bearer ${token}`,
           },
           body: formDataToSend,
-          credentials: "include",
           cache: "no-store",
         }
       );
@@ -147,7 +150,9 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
       };
 
       setPlansList((prev) =>
-        prev.map((plan) => (plan.id === updatedPlanData.id ? updatedPlanData : plan))
+        prev.map((plan) =>
+          plan.id === updatedPlanData.id ? updatedPlanData : plan
+        )
       );
 
       toast.success("Travel plan updated successfully!");
@@ -166,7 +171,7 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
-          credentials: "include",
+         
         }
       );
 
@@ -189,7 +194,9 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
 
       {plansList.length === 0 ? (
         <div className="text-center mt-20 space-y-4">
-          <p className="text-3xl text-muted-foreground ">You have no travel plans.</p>
+          <p className="text-3xl text-muted-foreground ">
+            You have no travel plans.
+          </p>
           <Link
             href="/dashboard/create-travelplan"
             className="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
@@ -221,7 +228,9 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                       )}
                       <div>
                         <h2 className="text-xl font-semibold">{plan.title}</h2>
-                        <p className="text-sm text-muted-foreground">{plan.destination}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {plan.destination}
+                        </p>
                       </div>
                     </div>
                     <Badge variant="secondary">{plan.travelType}</Badge>
@@ -237,26 +246,31 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                   </p>
 
                   {plan.description && (
-                    <p className="text-sm text-muted-foreground">{plan.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {plan.description}
+                    </p>
                   )}
 
-                  {Array.isArray(plan.itinerary) && plan.itinerary.length > 0 && (
-                    <div className="space-y-2">
-                      <h3 className="font-semibold">Itinerary</h3>
-                      <ul className="list-disc list-inside text-sm text-muted-foreground">
-                        {plan.itinerary.map((item) => (
-                          <li key={item.day}>
-                            Day {item.day}: {item.activity}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {Array.isArray(plan.itinerary) &&
+                    plan.itinerary.length > 0 && (
+                      <div className="space-y-2">
+                        <h3 className="font-semibold">Itinerary</h3>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground">
+                          {plan.itinerary.map((item) => (
+                            <li key={item.day}>
+                              Day {item.day}: {item.activity}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
                   <Separator />
 
                   <div className="flex gap-2">
-                    <Button size="sm" onClick={() => handleEdit(plan)}>Edit</Button>
+                    <Button size="sm" onClick={() => handleEdit(plan)}>
+                      Edit
+                    </Button>
                     <DeleteTravelPlanDialog
                       planId={plan.id}
                       planTitle={plan.title}
@@ -271,7 +285,8 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                       Requests ({plan.matchRequests?.length || 0})
                     </h3>
 
-                    {Array.isArray(plan.matchRequests) && plan.matchRequests.length > 0 ? (
+                    {Array.isArray(plan.matchRequests) &&
+                    plan.matchRequests.length > 0 ? (
                       plan.matchRequests.map((req) => (
                         <div
                           key={req.id}
@@ -286,8 +301,12 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                               className="rounded-full"
                             />
                             <div>
-                              <p className="font-medium">{req.sender.fullName}</p>
-                              <p className="text-xs text-muted-foreground">{req.message}</p>
+                              <p className="font-medium">
+                                {req.sender.fullName}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {req.message}
+                              </p>
                             </div>
                           </div>
 
@@ -295,21 +314,29 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                             <div className="flex gap-2">
                               <Button
                                 size="sm"
-                                onClick={() => handleRequestAction(req.id, "ACCEPTED")}
+                                onClick={() =>
+                                  handleRequestAction(req.id, "ACCEPTED")
+                                }
                               >
                                 Accept
                               </Button>
                               <Button
                                 size="sm"
                                 variant="destructive"
-                                onClick={() => handleRequestAction(req.id, "REJECTED")}
+                                onClick={() =>
+                                  handleRequestAction(req.id, "REJECTED")
+                                }
                               >
                                 Reject
                               </Button>
                             </div>
                           ) : (
                             <Badge
-                              variant={req.status === "ACCEPTED" ? "default" : "destructive"}
+                              variant={
+                                req.status === "ACCEPTED"
+                                  ? "default"
+                                  : "destructive"
+                              }
                             >
                               {req.status}
                             </Badge>
@@ -317,7 +344,9 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                         </div>
                       ))
                     ) : (
-                      <p className="text-sm text-muted-foreground">No requests yet</p>
+                      <p className="text-sm text-muted-foreground">
+                        No requests yet
+                      </p>
                     )}
                   </div>
                 </CardContent>

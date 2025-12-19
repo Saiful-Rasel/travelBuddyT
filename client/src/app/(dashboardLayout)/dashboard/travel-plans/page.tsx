@@ -16,7 +16,7 @@ export default async function MyTravelPlansPage() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Cookie: `accessToken=${token}`,
+           Authorization: `Bearer ${token }`
         },
         cache: "no-store",
       }

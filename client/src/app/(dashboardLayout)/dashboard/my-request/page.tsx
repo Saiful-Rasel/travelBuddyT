@@ -53,7 +53,7 @@ export default async function MySentRequestsPage() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Cookie: `accessToken=${token}`,
+          Authorization: `Bearer ${token }`, 
         },
         cache: "no-store",
       }
