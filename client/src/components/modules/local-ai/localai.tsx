@@ -144,7 +144,7 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="max-w-full mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">AI Travel Itinerary</h1>
 
       {/* Premium check */}
