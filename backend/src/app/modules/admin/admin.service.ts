@@ -187,55 +187,27 @@ const getAllUser = async (options: any) => {
 };
 
 const deleteUser = async (userId: number) => {
-  return prisma.$transaction(async (tx) => {
-    await tx.matchRequest.deleteMany({
-      where: { senderId: userId },
-    });
+  await prisma.matchRequest.deleteMany({ where: { senderId: userId } });
+  await prisma.matchRequest.deleteMany({ where: { receiverId: userId } });
 
-    await tx.matchRequest.deleteMany({
-      where: { receiverId: userId },
-    });
+  await prisma.review.deleteMany({ where: { reviewerId: userId } });
+  await prisma.review.deleteMany({ where: { reviewedId: userId } });
 
-    await tx.review.deleteMany({
-      where: { reviewerId: userId },
-    });
-
-    await tx.review.deleteMany({
-      where: { reviewedId: userId },
-    });
-
-    await tx.matchRequest.deleteMany({
-      where: {
-        travelPlan: {
-          userId: userId,
-        },
-      },
-    });
-
-    await tx.review.deleteMany({
-      where: {
-        travelPlan: {
-          userId: userId,
-        },
-      },
-    });
-
-    await tx.travelPlan.deleteMany({
-      where: { userId },
-    });
-
-    await tx.payment.deleteMany({
-      where: { userId },
-    });
-
-    const deletedUser = await tx.user.delete({
-      where: { id: userId },
-    });
-
-    return deletedUser;
+  await prisma.matchRequest.deleteMany({
+    where: { travelPlan: { userId } },
   });
-};
 
+  await prisma.review.deleteMany({
+    where: { travelPlan: { userId } },
+  });
+
+  await prisma.travelPlan.deleteMany({ where: { userId } });
+  await prisma.payment.deleteMany({ where: { userId } });
+
+  const deletedUser = await prisma.user.delete({ where: { id: userId } });
+
+  return deletedUser;
+};
 export const AdminService = {
   updateUserRoleIntoDB,
   blockTravelPlanByAdminIntoDB,

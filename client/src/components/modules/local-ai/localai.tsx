@@ -144,20 +144,23 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
   };
 
   return (
-    <div className="max-w-full mx-auto p-4">
+    <div className=" mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">AI Travel Itinerary</h1>
 
       {/* Premium check */}
       {currentUser?.premium ? (
         <>
-          <form className="flex gap-2 mb-4" onSubmit={handleGenerateItinerary}>
-            <Input
+          <form className="flex gap-2 mb-4 " onSubmit={handleGenerateItinerary}>
+    
+              <Input
               placeholder="Enter destination"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
               disabled={loading}
-              className="dark:bg-gray-700 dark:text-white"
+            
+             className="dark:bg-gray-700 dark:text-white   "
             />
+           
             <Button type="submit" disabled={loading}>
               {loading ? "Generating..." : "Generate"}
             </Button>
@@ -186,7 +189,7 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
           )}
         </>
       ) : (
-        // Always show unlock UI if not premium
+    
         <div className="h-[30vh] flex flex-col items-center justify-center rounded-xl bg-blue-600 p-4">
           <p className="text-white mb-2">
             {currentUser ? `Hello, ${currentUser.fullName}` : "Unlock AI Travel Itinerary"}
