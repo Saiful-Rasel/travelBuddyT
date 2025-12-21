@@ -34,6 +34,8 @@ router.post("/success", async (req: Request, res: Response) => {
       config.jwt.expires_in as string
     );
 
+    console.log(accessToken,"from callback")
+
  
     const refreshToken = jwtHelper.generateToken(
       { email: user.email, role: user.role },

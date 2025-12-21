@@ -80,11 +80,10 @@ const unblockTravelPlanByAdminIntoDB = async (planId: number) => {
   return unblockedPlan;
 };
 
-
 const getAllPayments = async () => {
   const payments = await prisma.payment.findMany({
     include: {
-      user: true, 
+      user: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -97,7 +96,6 @@ const getAllPayments = async () => {
 
   return payments;
 };
-
 
 const verifyPaymentService = async (paymentId: number) => {
   const payment = await prisma.payment.findUnique({
@@ -113,12 +111,10 @@ const verifyPaymentService = async (paymentId: number) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Payment already verified");
   }
 
-
   const updatedPayment = await prisma.payment.update({
     where: { id: paymentId },
     data: { status: "SUCCESS" },
   });
-
 
   await prisma.user.update({
     where: { id: payment.userId },
@@ -128,12 +124,15 @@ const verifyPaymentService = async (paymentId: number) => {
   return updatedPayment;
 };
 
-
 const getStatsService = async () => {
   const totalUsers = await prisma.user.count();
-  const totalPremiumUsers = await prisma.user.count({ where: { premium: true } });
+  const totalPremiumUsers = await prisma.user.count({
+    where: { premium: true },
+  });
   const totalPayments = await prisma.payment.count();
-  const totalSuccessfulPayments = await prisma.payment.count({ where: { status: "SUCCESS" } });
+  const totalSuccessfulPayments = await prisma.payment.count({
+    where: { status: "SUCCESS" },
+  });
   const totalRevenueObj = await prisma.payment.aggregate({
     _sum: { amount: true },
     where: { status: "SUCCESS" },
@@ -147,7 +146,6 @@ const getStatsService = async () => {
     totalPayments,
     totalSuccessfulPayments,
     totalRevenue,
-    
   };
 };
 
@@ -155,19 +153,20 @@ const getAllUser = async (options: any) => {
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelper.calculatePagination(options);
 
-  
   const total = await prisma.user.count({
-    where: {  role: {
-        in: [Role.USER, Role.ADMIN], 
-      }
-    }
+    where: {
+      role: {
+        in: [Role.USER, Role.ADMIN],
+      },
+    },
   });
 
-
   const data = await prisma.user.findMany({
-    where: {  role: {
-        in: [Role.USER, Role.ADMIN], 
-      }},
+    where: {
+      role: {
+        in: [Role.USER, Role.ADMIN],
+      },
+    },
     skip,
     take: limit,
     orderBy:
@@ -187,14 +186,55 @@ const getAllUser = async (options: any) => {
   };
 };
 
+const deleteUser = async (userId: number) => {
+  return prisma.$transaction(async (tx) => {
+    await tx.matchRequest.deleteMany({
+      where: { senderId: userId },
+    });
 
-const deleteUser = async(userId:number) => {
-    const user = await prisma.user.delete({
-      where:{id:userId}
-    })
-    return user
-}
+    await tx.matchRequest.deleteMany({
+      where: { receiverId: userId },
+    });
 
+    await tx.review.deleteMany({
+      where: { reviewerId: userId },
+    });
+
+    await tx.review.deleteMany({
+      where: { reviewedId: userId },
+    });
+
+    await tx.matchRequest.deleteMany({
+      where: {
+        travelPlan: {
+          userId: userId,
+        },
+      },
+    });
+
+    await tx.review.deleteMany({
+      where: {
+        travelPlan: {
+          userId: userId,
+        },
+      },
+    });
+
+    await tx.travelPlan.deleteMany({
+      where: { userId },
+    });
+
+    await tx.payment.deleteMany({
+      where: { userId },
+    });
+
+    const deletedUser = await tx.user.delete({
+      where: { id: userId },
+    });
+
+    return deletedUser;
+  });
+};
 
 export const AdminService = {
   updateUserRoleIntoDB,
@@ -204,5 +244,5 @@ export const AdminService = {
   verifyPaymentService,
   getStatsService,
   getAllUser,
-  deleteUser
+  deleteUser,
 };

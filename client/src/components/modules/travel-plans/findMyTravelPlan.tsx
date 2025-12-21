@@ -171,7 +171,6 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
-         
         }
       );
 

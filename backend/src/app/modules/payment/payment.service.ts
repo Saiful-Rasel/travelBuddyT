@@ -54,7 +54,7 @@ const createPayment = async (paymentData: any, user: any) => {
     ship_country: "Bangladesh",
   };
 
-  console.log(data)
+
 
   const sslcz = new (SSLCommerzPayment as any)(store_id, store_passwd, is_live);
   const apiResponse = await sslcz.init(data);

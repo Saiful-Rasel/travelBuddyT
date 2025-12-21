@@ -24,7 +24,10 @@ const travelPlanSchema = z.object({
     .min(1, "At least one itinerary item is required"),
 });
 
-export const createTravelPlan = async (currentState: any, formData: FormData) => {
+export const createTravelPlan = async (
+  currentState: any,
+  formData: FormData
+) => {
   try {
     const token = await getCookie("accessToken");
 
@@ -38,8 +41,12 @@ export const createTravelPlan = async (currentState: any, formData: FormData) =>
       destination: formData.get("destination") as string,
       startDate: formData.get("startDate") as string,
       endDate: formData.get("endDate") as string,
-      minBudget: formData.get("minBudget") ? Number(formData.get("minBudget")) : undefined,
-      maxBudget: formData.get("maxBudget") ? Number(formData.get("maxBudget")) : undefined,
+      minBudget: formData.get("minBudget")
+        ? Number(formData.get("minBudget"))
+        : undefined,
+      maxBudget: formData.get("maxBudget")
+        ? Number(formData.get("maxBudget"))
+        : undefined,
       travelType: formData.get("travelType") as string,
       description: formData.get("description") as string,
       itinerary,
@@ -67,15 +74,17 @@ export const createTravelPlan = async (currentState: any, formData: FormData) =>
       apiFormData.append("file", file);
     }
 
-    // Send request
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans`, {
-      method: "POST",
-      headers: {
-        Cookie: `accessToken=${token}`,
-      },
-      credentials: "include",
-      body: apiFormData,
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        body: apiFormData,
+      }
+    );
 
     // Safely parse JSON response
     let result: any = {};
@@ -84,7 +93,6 @@ export const createTravelPlan = async (currentState: any, formData: FormData) =>
     } catch {
       result = {};
     }
- 
 
     if (!res.ok) {
       throw new Error(result.message || "Create failed");

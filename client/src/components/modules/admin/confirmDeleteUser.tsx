@@ -40,8 +40,9 @@ export default function ConfirmDeleteModal({
           },
         }
       );
-
+ console.log(res,"res")
       const data = await res.json();
+      console.log(data,"data")
 
       if (data.success) {
         toast.success("User deleted successfully!");
