@@ -158,7 +158,7 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
               onChange={(e) => setDestination(e.target.value)}
               disabled={loading}
             
-             className="dark:bg-gray-700 dark:text-white   "
+             className="dark:bg-gray-700 dark:text-white m n  "
             />
            
             <Button type="submit" disabled={loading}>

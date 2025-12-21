@@ -64,30 +64,7 @@ export default function Hero({ travelPlans, user }: HeroProps) {
           </Link>
         </div>
       </section>
-      {/* Top-Rated Travelers */}
-      <section className="p-10 bg-zinc-50 dark:bg-gray-900 rounded-2xl shadow dark:shadow-gray-700 transition-colors w-full">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
-          Top-Rated Travelers
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((t, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="p-6 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 shadow-sm transition-colors"
-            >
-              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
-                Traveler {t}
-              </h3>
-              <p className="text-sm text-zinc-600 dark:text-gray-300">
-                Trusted by 300+ trips.
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+    
       {/* Why Choose Us */}
       <section className="p-10 bg-white dark:bg-gray-800 rounded-2xl shadow dark:shadow-gray-700 transition-colors">
         <h2 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-gray-100">
