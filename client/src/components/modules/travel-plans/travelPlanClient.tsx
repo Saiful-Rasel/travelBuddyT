@@ -2,6 +2,7 @@
 
 import TravelPlanCard from "@/components/modules/travel-plans/travelPlanCard";
 import { TravelPlan } from "@/components/types/travelPlan";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -18,7 +19,9 @@ export default function TravelPlansClient({ travelPlans, meta }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || meta.page);
+  const [currentPage, setCurrentPage] = useState(
+    Number(searchParams.get("page")) || meta.page
+  );
   const [plans, setPlans] = useState(travelPlans);
 
   const totalPages = Math.ceil(meta.total / meta.limit);
@@ -57,9 +60,15 @@ export default function TravelPlansClient({ travelPlans, meta }: Props) {
       </div>
 
       {/* Grid */}
-      <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 cursor-pointer">
         {plans.map((plan) => (
-          <TravelPlanCard key={plan.id} {...plan} />
+          <Link
+            key={plan.id}
+            href={`/travel-plans/${plan.id}`}
+            className="block"
+          >
+            <TravelPlanCard {...plan} />
+          </Link>
         ))}
       </div>
 

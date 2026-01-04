@@ -28,7 +28,11 @@ interface ItineraryData {
   itinerary: Record<string, ItineraryDay>;
 }
 
-export default function PremiumItineraryClient({ user, setUser, amount = 999 }: Props) {
+export default function PremiumItineraryClient({
+  user,
+  setUser,
+  amount = 999,
+}: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tranId = searchParams.get("tran_id"); // payment redirect
@@ -48,13 +52,16 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
       if (tranId && currentUser && !currentUser.premium) {
         try {
           const token = await getCookie("accessToken");
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
-            cache: "no-store",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`,
+            {
+              cache: "no-store",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
           const data = await res.json();
           if (data.success && data.data) {
             setCurrentUser(data.data);
@@ -80,14 +87,17 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
     if (!currentUser.premium) {
       try {
         const token = await getCookie("accessToken");
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/create`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ amount }),
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/create`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ amount }),
+          }
+        );
         if (!res.ok) {
           const text = await res.text();
           throw new Error(text || "Payment initiation failed");
@@ -116,15 +126,18 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
     setLoading(true);
     try {
       const token = await getCookie("accessToken");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/ai/itinerary`, {
-        method: "POST",
-        cache: "no-store",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token || ""}`,
-        },
-        body: JSON.stringify({ destination }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/ai/itinerary`,
+        {
+          method: "POST",
+          cache: "no-store",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token || ""}`,
+          },
+          body: JSON.stringify({ destination }),
+        }
+      );
       if (!res.ok) {
         const text = await res.text();
         throw new Error(text || "Failed to generate itinerary");
@@ -145,26 +158,55 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
 
   return (
     <div className=" mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">AI Travel Itinerary</h1>
+      <h1 className="md:text-2xl font-bold mb-4 md:text-center text-gray-900 dark:text-white">
+        AI Travel Itinerary
+      </h1>
 
       {/* Premium check */}
       {currentUser?.premium ? (
         <>
-          <form className="flex gap-2 mb-4 " onSubmit={handleGenerateItinerary}>
-    
-              <Input
-              placeholder="Enter destination"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              disabled={loading}
-            
-             className="dark:bg-gray-700 dark:text-white m n  "
-            />
-           
-            <Button type="submit" disabled={loading}>
-              {loading ? "Generating..." : "Generate"}
-            </Button>
-          </form>
+          <div className="w-full flex items-center justify-center">
+            <form
+              className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto justify-center"
+              onSubmit={handleGenerateItinerary}
+            >
+              <input
+                type="text"
+                placeholder="Enter destination"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                disabled={loading}
+                className="
+          flex-1
+          px-4 py-2
+          rounded-lg
+          border border-gray-300 dark:border-gray-600
+          bg-white dark:bg-gray-700
+          text-gray-900 dark:text-white
+          placeholder-gray-400 dark:placeholder-gray-300
+          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+          transition
+          w-full sm:w-[350px] md:w-[400px] lg:w-[450px]
+        "
+              />
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="
+          mt-2 sm:mt-0
+          px-4 py-2
+          rounded-lg
+          bg-blue-500 text-white
+          hover:bg-blue-600
+          disabled:bg-gray-400 disabled:cursor-not-allowed
+          transition
+        "
+              >
+                {loading ? "Generating..." : "Generate"}
+              </button>
+            </form>
+          </div>
 
           {itinerary && (
             <div className="space-y-4">
@@ -176,12 +218,22 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
                   key={day}
                   className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 shadow-sm"
                 >
-                  <h3 className="font-semibold mb-2 capitalize text-gray-900 dark:text-white">{day}</h3>
+                  <h3 className="font-semibold mb-2 capitalize text-gray-900 dark:text-white">
+                    {day}
+                  </h3>
                   <ul className="list-disc list-inside space-y-1 text-gray-800 dark:text-gray-300">
-                    <li><strong>Morning:</strong> {info.morning}</li>
-                    <li><strong>Afternoon:</strong> {info.afternoon}</li>
-                    <li><strong>Evening:</strong> {info.evening}</li>
-                    <li><strong>Estimated Cost:</strong> {info.estimatedCost}</li>
+                    <li>
+                      <strong>Morning:</strong> {info.morning}
+                    </li>
+                    <li>
+                      <strong>Afternoon:</strong> {info.afternoon}
+                    </li>
+                    <li>
+                      <strong>Evening:</strong> {info.evening}
+                    </li>
+                    <li>
+                      <strong>Estimated Cost:</strong> {info.estimatedCost}
+                    </li>
                   </ul>
                 </div>
               ))}
@@ -189,10 +241,11 @@ export default function PremiumItineraryClient({ user, setUser, amount = 999 }: 
           )}
         </>
       ) : (
-    
         <div className="h-[30vh] flex flex-col items-center justify-center rounded-xl bg-blue-600 p-4">
           <p className="text-white mb-2">
-            {currentUser ? `Hello, ${currentUser.fullName}` : "Unlock AI Travel Itinerary"}
+            {currentUser
+              ? `Hello, ${currentUser.fullName}`
+              : "Unlock AI Travel Itinerary"}
           </p>
           <p className="text-white mb-4">Premium service fee: {amount} BDT</p>
           <Button

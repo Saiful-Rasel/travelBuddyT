@@ -152,9 +152,7 @@ const deleteTravelPlan = async (user: any, planId: number) => {
   if (plan.userId !== user.id && user.role !== "ADMIN") {
     throw new AppError(httpStatus.FORBIDDEN, "You cannot delete this plan");
   }
-  // return await prisma.travelPlan.delete({
-  //   where: { id: planId },
-  // });
+
   return await prisma.$transaction(async(tx) => {
     await tx.review.deleteMany({
       where:{travelPlanId:planId}

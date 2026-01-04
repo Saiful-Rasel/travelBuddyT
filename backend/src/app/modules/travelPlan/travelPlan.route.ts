@@ -67,4 +67,7 @@ router.delete(
   travelPlanController.deleteTravelPlan
 );
 
+
+
+
 export const travelPlanRoutes = router;

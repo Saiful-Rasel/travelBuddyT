@@ -10,6 +10,7 @@ import {
   SidebarGroup,
   SidebarHeader,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 interface AppSidebarProps {
@@ -22,9 +23,14 @@ interface AppSidebarProps {
 
 interface MenuLinksProps {
   menuItems: { label: string; href: string }[];
+    onLinkClick?: () => void;
 }
 
 function MenuLinks({ menuItems }: MenuLinksProps) {
+    const { isMobile, setOpenMobile } = useSidebar();
+      const handleClick = () => {
+    if (isMobile) setOpenMobile(false); 
+  };
   return (
     <SidebarContent className="bg-gray-900 text-white flex-1">
       <SidebarGroup className="flex flex-col gap-1">
@@ -32,6 +38,7 @@ function MenuLinks({ menuItems }: MenuLinksProps) {
           <Link
             key={item.href}
             href={item.href}
+             onClick={handleClick}
             className="block px-4 py-2 rounded hover:bg-gray-700"
           >
             {item.label}
@@ -56,7 +63,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
           { label: "Manage Users", href: "/dashboard/admin/manage-user" },
           { label: "Manage Travel Plans", href: "/dashboard/admin/manage-travel-plans" },
           { label: "Payment & Subscriptions", href: "/dashboard/admin/payment" },
-          // { label: "Payment & Subscriptions", href: "/dashboard/admin/payment-subscriptions" },
+        
         ];
 
   return (
