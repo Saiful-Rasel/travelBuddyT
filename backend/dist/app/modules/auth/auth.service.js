@@ -36,7 +36,13 @@ const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         fullName: user.fullName,
         premium: user.premium,
     }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
-    const refreshToken = jwtHelper_1.jwtHelper.generateToken({ email: user.email, role: user.role }, config_1.default.jwt.refresh_token_secret, config_1.default.jwt.refresh_token_expires_in);
+    const refreshToken = jwtHelper_1.jwtHelper.generateToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        fullName: user.fullName,
+        premium: user.premium,
+    }, config_1.default.jwt.refresh_token_secret, config_1.default.jwt.refresh_token_expires_in);
     return {
         accessToken,
         refreshToken,
@@ -50,14 +56,17 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     catch (err) {
         throw new Error("You are not authorized!");
     }
-    const userData = yield prisma_1.default.user.findUniqueOrThrow({
+    const user = yield prisma_1.default.user.findUniqueOrThrow({
         where: {
             email: decodedData.email,
         },
     });
     const accessToken = jwtHelper_1.jwtHelper.generateToken({
-        email: userData.email,
-        role: userData.role,
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        fullName: user.fullName,
+        premium: user.premium,
     }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
     return {
         accessToken,

@@ -114,9 +114,13 @@ const verifyPaymentService = (paymentId) => __awaiter(void 0, void 0, void 0, fu
 });
 const getStatsService = () => __awaiter(void 0, void 0, void 0, function* () {
     const totalUsers = yield prisma_1.default.user.count();
-    const totalPremiumUsers = yield prisma_1.default.user.count({ where: { premium: true } });
+    const totalPremiumUsers = yield prisma_1.default.user.count({
+        where: { premium: true },
+    });
     const totalPayments = yield prisma_1.default.payment.count();
-    const totalSuccessfulPayments = yield prisma_1.default.payment.count({ where: { status: "SUCCESS" } });
+    const totalSuccessfulPayments = yield prisma_1.default.payment.count({
+        where: { status: "SUCCESS" },
+    });
     const totalRevenueObj = yield prisma_1.default.payment.aggregate({
         _sum: { amount: true },
         where: { status: "SUCCESS" },
@@ -133,15 +137,18 @@ const getStatsService = () => __awaiter(void 0, void 0, void 0, function* () {
 const getAllUser = (options) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePagination(options);
     const total = yield prisma_1.default.user.count({
-        where: { role: {
+        where: {
+            role: {
                 in: [client_1.Role.USER, client_1.Role.ADMIN],
-            }
-        }
+            },
+        },
     });
     const data = yield prisma_1.default.user.findMany({
-        where: { role: {
+        where: {
+            role: {
                 in: [client_1.Role.USER, client_1.Role.ADMIN],
-            } },
+            },
+        },
         skip,
         take: limit,
         orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: "desc" },
@@ -159,10 +166,20 @@ const getAllUser = (options) => __awaiter(void 0, void 0, void 0, function* () {
     };
 });
 const deleteUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield prisma_1.default.user.delete({
-        where: { id: userId }
+    yield prisma_1.default.matchRequest.deleteMany({ where: { senderId: userId } });
+    yield prisma_1.default.matchRequest.deleteMany({ where: { receiverId: userId } });
+    yield prisma_1.default.review.deleteMany({ where: { reviewerId: userId } });
+    yield prisma_1.default.review.deleteMany({ where: { reviewedId: userId } });
+    yield prisma_1.default.matchRequest.deleteMany({
+        where: { travelPlan: { userId } },
     });
-    return user;
+    yield prisma_1.default.review.deleteMany({
+        where: { travelPlan: { userId } },
+    });
+    yield prisma_1.default.travelPlan.deleteMany({ where: { userId } });
+    yield prisma_1.default.payment.deleteMany({ where: { userId } });
+    const deletedUser = yield prisma_1.default.user.delete({ where: { id: userId } });
+    return deletedUser;
 });
 exports.AdminService = {
     updateUserRoleIntoDB,
@@ -172,5 +189,5 @@ exports.AdminService = {
     verifyPaymentService,
     getStatsService,
     getAllUser,
-    deleteUser
+    deleteUser,
 };

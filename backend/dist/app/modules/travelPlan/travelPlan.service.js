@@ -68,7 +68,6 @@ const getMyTravelPlans = (user) => __awaiter(void 0, void 0, void 0, function* (
                     profileImage: true,
                 },
             },
-            // ⭐ ALL MATCH REQUESTS FOR THIS PLAN
             matchRequests: {
                 include: {
                     sender: {
@@ -141,9 +140,20 @@ const deleteTravelPlan = (user, planId) => __awaiter(void 0, void 0, void 0, fun
     if (plan.userId !== user.id && user.role !== "ADMIN") {
         throw new appError_1.default(http_status_1.default.FORBIDDEN, "You cannot delete this plan");
     }
-    return yield prisma_1.default.travelPlan.delete({
-        where: { id: planId },
-    });
+    // return await prisma.travelPlan.delete({
+    //   where: { id: planId },
+    // });
+    return yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        yield tx.review.deleteMany({
+            where: { travelPlanId: planId }
+        });
+        yield tx.matchRequest.deleteMany({
+            where: { travelPlanId: planId }
+        });
+        return yield tx.travelPlan.delete({
+            where: { id: planId },
+        });
+    }));
 });
 const getFeedTravelPlans = (userId, options, filters) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePagination(options);

@@ -73,8 +73,6 @@ const getMyTravelPlans = async (user: any) => {
           profileImage: true,
         },
       },
-
-      // ⭐ ALL MATCH REQUESTS FOR THIS PLAN
       matchRequests: {
         include: {
           sender: {
@@ -146,6 +144,7 @@ const updateTravelPlan = async ({
   return updatedPlan;
 };
 
+
 const deleteTravelPlan = async (user: any, planId: number) => {
   const plan = await prisma.travelPlan.findUniqueOrThrow({
     where: { id: planId },
@@ -153,10 +152,23 @@ const deleteTravelPlan = async (user: any, planId: number) => {
   if (plan.userId !== user.id && user.role !== "ADMIN") {
     throw new AppError(httpStatus.FORBIDDEN, "You cannot delete this plan");
   }
-  return await prisma.travelPlan.delete({
-    where: { id: planId },
-  });
+  // return await prisma.travelPlan.delete({
+  //   where: { id: planId },
+  // });
+  return await prisma.$transaction(async(tx) => {
+    await tx.review.deleteMany({
+      where:{travelPlanId:planId}
+    })
+    await tx.matchRequest.deleteMany({
+       where:{travelPlanId:planId}
+    })
+
+     return await tx.travelPlan.delete({
+      where: { id: planId },
+    });
+  })
 };
+
 
 const getFeedTravelPlans = async (
   userId: number,

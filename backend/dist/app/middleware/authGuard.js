@@ -18,16 +18,28 @@ const appError_1 = __importDefault(require("../errors/appError"));
 const config_1 = __importDefault(require("../config"));
 const auth = (...roles) => {
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
+        var _a, _b;
         try {
-            const token = req.cookies.accessToken || ((_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1]);
-            if (!token) {
-                throw new appError_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized!");
+            let token;
+            if ((_a = req.cookies) === null || _a === void 0 ? void 0 : _a.accessToken) {
+                token = req.cookies.accessToken;
             }
-            const verifyUser = jwtHelper_1.jwtHelper.verifyToken(token, config_1.default.jwt.jwt_secret);
+            else if ((_b = req.headers.authorization) === null || _b === void 0 ? void 0 : _b.startsWith("Bearer ")) {
+                token = req.headers.authorization.split(" ")[1];
+            }
+            if (!token) {
+                throw new appError_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized! Token missing.");
+            }
+            let verifyUser;
+            try {
+                verifyUser = jwtHelper_1.jwtHelper.verifyToken(token, config_1.default.jwt.jwt_secret);
+            }
+            catch (err) {
+                throw new appError_1.default(http_status_1.default.UNAUTHORIZED, "Invalid or malformed token");
+            }
             req.user = verifyUser;
             if (roles.length && !roles.includes(verifyUser.role)) {
-                throw new appError_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized!");
+                throw new appError_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized for this role!");
             }
             next();
         }

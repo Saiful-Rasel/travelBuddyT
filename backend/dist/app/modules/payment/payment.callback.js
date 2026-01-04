@@ -38,6 +38,7 @@ router.post("/success", (req, res) => __awaiter(void 0, void 0, void 0, function
             fullName: user.fullName,
             premium: user.premium,
         }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
+        console.log(accessToken, "from callback");
         const refreshToken = jwtHelper_1.jwtHelper.generateToken({ email: user.email, role: user.role }, config_1.default.jwt.refresh_token_secret, config_1.default.jwt.refresh_token_expires_in);
         res.cookie("accessToken", accessToken, {
             secure: true,
