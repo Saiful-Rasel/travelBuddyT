@@ -14,6 +14,8 @@ import UpdateModal from "./updateTravelPlanModal";
 import DeleteTravelPlanDialog from "./deleteTravelPlanModal";
 import { getCookie } from "@/service/auth/tokenHandler";
 
+/* ================= TYPES ================= */
+
 interface MatchRequest {
   id: number;
   message?: string;
@@ -41,23 +43,18 @@ interface TravelPlan {
   travelType: string;
   description?: string;
   image?: string | null;
-  itinerary?: ItineraryItem[];
-  matchRequests?: MatchRequest[];
+  itinerary: ItineraryItem[];
+  matchRequests: MatchRequest[];
 }
 
+/* ================= COMPONENT ================= */
+
 export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
+  const [plansList, setPlansList] = useState<TravelPlan[]>(plans);
   const [selectedPlan, setSelectedPlan] = useState<TravelPlan | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [plansList, setPlansList] = useState(
-    plans.map((plan) => ({
-      ...plan,
-      itinerary: Array.isArray(plan.itinerary) ? plan.itinerary : [],
-      matchRequests: Array.isArray(plan.matchRequests)
-        ? plan.matchRequests
-        : [],
-    }))
-  );
+  /* ================= MATCH REQUEST ================= */
 
   const handleRequestAction = async (
     requestId: number,
@@ -65,6 +62,7 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
   ) => {
     try {
       const token = await getCookie("accessToken");
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/match-requests/${requestId}`,
         {
@@ -77,49 +75,37 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
         }
       );
 
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || "Failed to update request");
-      }
-
-      const data = await res.json();
+      if (!res.ok) throw new Error("Failed to update request");
 
       setPlansList((prev) =>
         prev.map((plan) => ({
           ...plan,
-          matchRequests: plan.matchRequests?.map((req) =>
-            req.id === requestId ? { ...req, status: data.action } : req
+          matchRequests: plan.matchRequests.map((req) =>
+            req.id === requestId ? { ...req, status: action } : req
           ),
         }))
       );
 
-      toast.success(`Request ${action.toLowerCase()} successfully!`);
+      toast.success(`Request ${action.toLowerCase()} successfully`);
     } catch (err: any) {
-      console.error(err);
-      toast.error(err.message || "Failed to update request");
+      toast.error(err.message || "Something went wrong");
     }
   };
+
+  /* ================= EDIT ================= */
 
   const handleEdit = (plan: TravelPlan) => {
     setSelectedPlan(plan);
     setIsModalOpen(true);
   };
 
-  const handleUpdate = async (data: any) => {
+  /* ================= UPDATE (🔥 FIXED PART) ================= */
+
+  const handleUpdate = async (formData: FormData) => {
     if (!selectedPlan) return;
 
     try {
       const token = await getCookie("accessToken");
-      const raw = data.get("data") as string;
-      const parsed = JSON.parse(raw);
-
-      const formDataToSend = new FormData();
-      formDataToSend.append("data", JSON.stringify(parsed));
-
-      const file = data.get("file");
-      if (file instanceof File) {
-        formDataToSend.append("file", file);
-      }
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/${selectedPlan.id}`,
@@ -128,44 +114,39 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          body: formDataToSend,
-          cache: "no-store",
+          body: formData,
         }
       );
 
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || "Update failed");
-      }
+      if (!res.ok) throw new Error("Update failed");
 
-      const updatedPlanResponse = await res.json();
-      const updatedPlanData = {
-        ...updatedPlanResponse.data,
-        itinerary: Array.isArray(updatedPlanResponse.data.itinerary)
-          ? updatedPlanResponse.data.itinerary
-          : [],
-        matchRequests: Array.isArray(updatedPlanResponse.data.matchRequests)
-          ? updatedPlanResponse.data.matchRequests
-          : [],
-      };
+      const { data: updatedData } = await res.json();
 
+      // ✅ SAFE MERGE (KEY FIX)
       setPlansList((prev) =>
         prev.map((plan) =>
-          plan.id === updatedPlanData.id ? updatedPlanData : plan
+          plan.id === selectedPlan.id
+            ? {
+                ...plan,        // keep old relations
+                ...updatedData, // override only updated fields
+              }
+            : plan
         )
       );
 
-      toast.success("Travel plan updated successfully!");
+      toast.success("Travel plan updated successfully");
       setIsModalOpen(false);
     } catch (err: any) {
-      console.error(err);
-      toast.error(err.message || "Failed to update travel plan");
+      toast.error(err.message || "Update failed");
     }
   };
+
+  /* ================= DELETE ================= */
 
   const deleteTravelPlan = async (id: number) => {
     try {
       const token = await getCookie("accessToken");
+
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/${id}`,
         {
@@ -174,31 +155,29 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
         }
       );
 
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || "Failed to delete travel plan");
-      }
+      if (!res.ok) throw new Error("Delete failed");
 
       setPlansList((prev) => prev.filter((plan) => plan.id !== id));
-      toast.success("Travel plan deleted successfully!");
+      toast.success("Travel plan deleted");
     } catch (err: any) {
-      console.error(err);
-      toast.error(err.message || "Failed to delete travel plan");
+      toast.error(err.message || "Delete failed");
     }
   };
 
+  /* ================= UI ================= */
+
   return (
-    <section className="min-h-screen w-full bg-zinc-50 dark:bg-black p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">My Travel Plans</h1>
+    <section className="min-h-screen bg-zinc-50 dark:bg-black p-4 md:p-6">
+      <h1 className="text-3xl font-bold text-center mb-8">My Travel Plans</h1>
 
       {plansList.length === 0 ? (
         <div className="text-center mt-20 space-y-4">
-          <p className="text-3xl text-muted-foreground ">
-            You have no travel plans.
+          <p className="text-muted-foreground text-xl">
+            You have no travel plans
           </p>
           <Link
             href="/dashboard/create-travelplan"
-            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+            className="inline-block px-5 py-2 bg-blue-600 text-white rounded-md"
           >
             Create Travel Plan
           </Link>
@@ -210,12 +189,12 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
               key={plan.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
             >
-              <Card className="rounded-2xl shadow-md">
+              <Card className="rounded-2xl shadow">
                 <CardContent className="p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                  {/* HEADER */}
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-3 items-center">
                       {plan.image && (
                         <Image
                           src={plan.image}
@@ -226,13 +205,13 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                         />
                       )}
                       <div>
-                        <h2 className="text-xl font-semibold">{plan.title}</h2>
+                        <h2 className="font-semibold text-lg">{plan.title}</h2>
                         <p className="text-sm text-muted-foreground">
                           {plan.destination}
                         </p>
                       </div>
                     </div>
-                    <Badge variant="secondary">{plan.travelType}</Badge>
+                    <Badge>{plan.travelType}</Badge>
                   </div>
 
                   <p className="text-sm">
@@ -241,7 +220,7 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                   </p>
 
                   <p className="text-sm">
-                    💰 Budget: {plan.minBudget || 0} – {plan.maxBudget || 0} BDT
+                    💰 Budget: {plan.minBudget ?? 0} – {plan.maxBudget ?? 0} BDT
                   </p>
 
                   {plan.description && (
@@ -249,20 +228,6 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                       {plan.description}
                     </p>
                   )}
-
-                  {Array.isArray(plan.itinerary) &&
-                    plan.itinerary.length > 0 && (
-                      <div className="space-y-2">
-                        <h3 className="font-semibold">Itinerary</h3>
-                        <ul className="list-disc list-inside text-sm text-muted-foreground">
-                          {plan.itinerary.map((item) => (
-                            <li key={item.day}>
-                              Day {item.day}: {item.activity}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
 
                   <Separator />
 
@@ -279,19 +244,23 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
 
                   <Separator />
 
-                  <div className="space-y-3">
+                  {/* MATCH REQUESTS */}
+                  <div className="space-y-2">
                     <h3 className="font-semibold">
-                      Requests ({plan.matchRequests?.length || 0})
+                      Requests ({plan.matchRequests.length})
                     </h3>
 
-                    {Array.isArray(plan.matchRequests) &&
-                    plan.matchRequests.length > 0 ? (
+                    {plan.matchRequests.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">
+                        No requests yet
+                      </p>
+                    ) : (
                       plan.matchRequests.map((req) => (
                         <div
                           key={req.id}
-                          className="flex items-center justify-between rounded-xl border p-3"
+                          className="flex justify-between items-center border rounded-xl p-3"
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex gap-3 items-center">
                             <Image
                               src={req.sender.profileImage || "/avatar.png"}
                               alt={req.sender.fullName}
@@ -342,10 +311,6 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                           )}
                         </div>
                       ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        No requests yet
-                      </p>
                     )}
                   </div>
                 </CardContent>

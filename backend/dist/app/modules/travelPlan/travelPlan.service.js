@@ -43,10 +43,13 @@ const createTravelPlan = (req) => __awaiter(void 0, void 0, void 0, function* ()
 });
 const getAllTravelPlans = () => __awaiter(void 0, void 0, void 0, function* () {
     return yield prisma_1.default.travelPlan.findMany({
-        where: { isActive: true },
         include: {
             user: {
-                select: { id: true, fullName: true, profileImage: true },
+                select: {
+                    id: true,
+                    fullName: true,
+                    profileImage: true,
+                },
             },
         },
         orderBy: { createdAt: "desc" },
@@ -140,9 +143,6 @@ const deleteTravelPlan = (user, planId) => __awaiter(void 0, void 0, void 0, fun
     if (plan.userId !== user.id && user.role !== "ADMIN") {
         throw new appError_1.default(http_status_1.default.FORBIDDEN, "You cannot delete this plan");
     }
-    // return await prisma.travelPlan.delete({
-    //   where: { id: planId },
-    // });
     return yield prisma_1.default.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
         yield tx.review.deleteMany({
             where: { travelPlanId: planId }

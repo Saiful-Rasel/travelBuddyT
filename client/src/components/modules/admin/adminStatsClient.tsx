@@ -47,12 +47,7 @@ export default function AdminStats({ stats }: { stats: StatsData }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
-          A
-        </div>
-        <h2 className="text-2xl font-bold">Admin Dashboard</h2>
-      </div>
+      
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
         <StatCard title="Total Users" value={stats.totalUsers} icon={Users}

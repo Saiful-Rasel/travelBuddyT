@@ -21,7 +21,9 @@ export interface TravelPlan {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  matchRequest?: string[]; // 🔹 make optional
 }
+
 
 export interface Receiver {
   id: number;

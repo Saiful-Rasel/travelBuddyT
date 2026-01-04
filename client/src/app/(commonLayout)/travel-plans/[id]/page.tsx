@@ -3,6 +3,7 @@
 import TravelPlanDetailsClient from "@/components/modules/travel-plans/travelPlanDetailsClient";
 import { getUserInfo } from "@/service/auth/getUserInfo";
 
+
 interface PageProps {
   params: {
     id: string;
@@ -20,6 +21,7 @@ interface TravelPlan {
   maxBudget: number;
   travelType: string;
   description: string;
+  isActive:boolean;
   itinerary: { day: number; activity: string }[];
   image?: string | null;
   user: {
@@ -57,6 +59,7 @@ export default async function TravelPlanDetailsPage({ params }: PageProps) {
   const plan: TravelPlan = result.data;
 
   const userData = await getUserInfo();
+  console.log(userData)
 
   return <TravelPlanDetailsClient plan={plan} currentUser={userData} />;
 }

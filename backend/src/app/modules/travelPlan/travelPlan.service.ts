@@ -47,10 +47,13 @@ const createTravelPlan = async (req: Request & { user: any }) => {
 
 const getAllTravelPlans = async () => {
   return await prisma.travelPlan.findMany({
-    where: { isActive: true },
     include: {
       user: {
-        select: { id: true, fullName: true, profileImage: true },
+        select: {
+          id: true,
+          fullName: true,
+          profileImage: true,
+        },
       },
     },
     orderBy: { createdAt: "desc" },

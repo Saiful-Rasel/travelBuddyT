@@ -1,7 +1,8 @@
 import MyTravelPlansClient from "@/components/modules/travel-plans/findMyTravelPlan";
+import { TravelPlan } from "@/components/types/travelPlan";
 
 import { getCookie } from "@/service/auth/tokenHandler";
-import { TravelPlan } from "../my-request/page";
+
 
 
 export default async function MyTravelPlansPage() {

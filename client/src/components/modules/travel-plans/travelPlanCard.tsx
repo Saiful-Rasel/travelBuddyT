@@ -25,10 +25,9 @@ interface TravelPlanCardProps {
   minBudget?: number;
   maxBudget?: number;
   travelType: string;
-  description?: string;
   image?: string | null;
   reviews?: Review[];
-  isActive: boolean; // ✅ DB field
+  isActive: boolean;
 }
 
 export default function TravelPlanCard({
@@ -40,25 +39,29 @@ export default function TravelPlanCard({
   minBudget,
   maxBudget,
   travelType,
-  description,
   image,
-  reviews,
+  reviews = [],
   isActive,
 }: TravelPlanCardProps) {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg overflow-hidden w-full md:w-96 hover:shadow-2xl transition-all duration-300">
-
-      {/* Image */}
+      {/* ================= Image Section ================= */}
       <div className="relative w-full h-64">
         {image ? (
-          <Image src={image} alt={title} fill className="object-cover" />
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover"
+            priority
+          />
         ) : (
           <div className="h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
             <span className="text-gray-500 dark:text-gray-300">No Image</span>
           </div>
         )}
 
-        {/* ✅ Active / Inactive Badge */}
+        {/* Active / Inactive Badge */}
         <div className="absolute top-3 right-3">
           <span
             className={`px-3 py-1 rounded-full text-xs font-semibold
@@ -73,47 +76,86 @@ export default function TravelPlanCard({
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-5">
-        {/* Title */}
-        <h3 className="text-xl md:text-2xl font-extrabold text-gray-800 dark:text-white mb-1">
+      {/* ================= Content Section ================= */}
+      <div className="p-5 space-y-1">
+        <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-white">
           {title}
         </h3>
 
-        {/* Destination */}
-        <p className="text-md text-gray-600 dark:text-gray-400 mb-2">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           {destination}
         </p>
 
-        {/* Dates */}
-        <p className="text-sm text-gray-500 dark:text-gray-300 mb-1">
-          📅 {new Date(startDate).toLocaleDateString()} -{" "}
+        <p className="text-sm text-gray-500 dark:text-gray-300">
+          📅 {new Date(startDate).toLocaleDateString()} –{" "}
           {new Date(endDate).toLocaleDateString()}
         </p>
 
-        {/* Budget */}
         {minBudget !== undefined && maxBudget !== undefined && (
-          <p className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-1">
-            💰 Budget: {minBudget} - {maxBudget} BDT
+          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+            💰 {minBudget} – {maxBudget} BDT
           </p>
         )}
 
-        {/* Travel Type */}
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-          🧭 Type: {travelType}
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          🧭 {travelType}
         </p>
 
-        {/* Reviews */}
-        {reviews && reviews.length > 0 && (
-          <div className="bg-yellow-50 dark:bg-yellow-900 rounded-md p-2 mb-2 text-sm text-yellow-800 dark:text-yellow-300">
-            ⭐ {reviews[0].rating} – {reviews[0].comment}
+        {/* ================= Reviews Section ================= */}
+        {!isActive && (
+          <div className="pt-2">
+            {reviews.length > 0 ? (
+              <>
+                {reviews.slice(0, 2).map((rev) => (
+                  <div
+                    key={rev.id}
+                    className="flex items-start gap-2 bg-yellow-50 dark:bg-yellow-900 rounded-md p-2 mb-2 text-sm"
+                  >
+                    {rev.reviewer.profileImage ? (
+                      <Image
+                        src={rev.reviewer.profileImage}
+                        alt={rev.reviewer.fullName}
+                        width={24}
+                        height={24}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-gray-400" />
+                    )}
+
+                    <div>
+                      <p className="font-semibold text-yellow-800 dark:text-yellow-300">
+                        {rev.reviewer.fullName}
+                      </p>
+                      <p className="text-yellow-700 dark:text-yellow-200">
+                        ⭐ {rev.rating}
+                        {rev.comment && ` – ${rev.comment}`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+
+                {reviews.length > 2 && (
+                  <Link
+                    href={`/travel-plans/${id}/reviews`}
+                    className="text-blue-600 dark:text-blue-400 text-sm hover:underline"
+                  >
+                    See all {reviews.length} reviews →
+                  </Link>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-gray-400 dark:text-gray-500">
+                No reviews yet
+              </p>
+            )}
           </div>
         )}
 
-        {/* Details Link */}
+        {/* ================= Details Link ================= */}
         <Link
           href={`/travel-plans/${id}`}
-          className="mt-2 inline-block text-blue-600 dark:text-blue-400 font-medium hover:underline text-sm"
+          className="inline-block pt-2 text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline"
         >
           See Details →
         </Link>
