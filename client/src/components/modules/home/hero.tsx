@@ -172,7 +172,7 @@ export default function Hero({ travelPlans, user }: HeroProps) {
       </section>
 
       {/* Premium Itinerary */}
-      <section className="p-4 sm:p-6 md:p-10 bg-zinc-50 dark:bg-gray-900 w-full rounded-xl sm:rounded-2xl shadow dark:shadow-gray-700 transition-colors">
+      <section className="p-4  sm:p-6 md:p-10 bg-zinc-50 dark:bg-gray-900 w-full rounded-xl mb-16 sm:rounded-2xl shadow dark:shadow-gray-700 transition-colors">
         <PremiumItineraryClient user={user} />
       </section>
     </div>

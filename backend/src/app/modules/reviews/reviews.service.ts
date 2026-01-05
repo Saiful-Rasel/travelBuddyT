@@ -2,59 +2,59 @@ import AppError from "../../errors/appError";
 import httpStatus from "http-status";
 import prisma from "../../shared/prisma";
 
-const createReview = async (
-  reviewerId: number,
-  reviewedId: number,
-  travelPlanId: number,
-  rating: number,
-  comment?: string
-) => {
-  if (reviewerId === reviewedId) {
-    throw new AppError(httpStatus.BAD_REQUEST, "You cannot review yourself");
-  }
+  const createReview = async (
+    reviewerId: number,
+    reviewedId: number,
+    travelPlanId: number,
+    rating: number,
+    comment?: string
+  ) => {
+    if (reviewerId === reviewedId) {
+      throw new AppError(httpStatus.BAD_REQUEST, "You cannot review yourself");
+    }
 
-  const match = await prisma.matchRequest.findFirst({
-    where: {
-      travelPlanId,
-      senderId: reviewerId,
-      status: "ACCEPTED",
-    },
-  });
+    const match = await prisma.matchRequest.findFirst({
+      where: {
+        travelPlanId,
+        senderId: reviewerId,
+        status: "ACCEPTED",
+      },
+    });
 
-  if (!match) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "You are not allowed to review this travel plan"
-    );
-  }
-  const existing = await prisma.review.findFirst({
-    where: { reviewerId, travelPlanId },
-  });
+    if (!match) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "You are not allowed to review this travel plan"
+      );
+    }
+    const existing = await prisma.review.findFirst({
+      where: { reviewerId, travelPlanId },
+    });
 
-  if (existing) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Review already exists");
-  }
-    const plan = await prisma.travelPlan.findUnique({ where: { id: travelPlanId } });
-  if (!plan) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Travel plan not found");
-  }
-  if (plan.isActive) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "You can review only after the plan ends"
-    );
-  }
+    if (existing) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Review already exists");
+    }
+      const plan = await prisma.travelPlan.findUnique({ where: { id: travelPlanId } });
+    if (!plan) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Travel plan not found");
+    }
+    if (plan.isActive) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "You can review only after the plan ends"
+      );
+    }
 
-  return await prisma.review.create({
-    data: {
-      reviewerId,
-      reviewedId,
-      travelPlanId,
-      rating,
-      comment,
-    },
-  });
-};
+    return await prisma.review.create({
+      data: {
+        reviewerId,
+        reviewedId,
+        travelPlanId,
+        rating,
+        comment,
+      },
+    });
+  };
 
 const getReviewsByTravelPlan = async (travelPlanId: number) => {
   return await prisma.review.findMany({

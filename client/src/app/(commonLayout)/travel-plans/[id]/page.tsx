@@ -1,8 +1,8 @@
 // src/app/(commonLayout)/travel-plans/[id]/page.tsx
 
 import TravelPlanDetailsClient from "@/components/modules/travel-plans/travelPlanDetailsClient";
+import { TravelPlan } from "@/components/types/travelPlan";
 import { getUserInfo } from "@/service/auth/getUserInfo";
-
 
 interface PageProps {
   params: {
@@ -10,37 +10,40 @@ interface PageProps {
   };
 }
 
-interface TravelPlan {
-  id: number;
-  userId: number;
-  title: string;
-  destination: string;
-  startDate: string;
-  endDate: string;
-  minBudget: number;
-  maxBudget: number;
-  travelType: string;
-  description: string;
-  isActive:boolean;
-  itinerary: { day: number; activity: string }[];
-  image?: string | null;
-  user: {
-    id: number;
-    fullName: string;
-    profileImage?: string | null;
-  };
-  reviews?: {
-    id: number;
-    reviewerId: number;
-    travelPlanId: number;
-    rating: number;
-    comment: string;
-    reviewer: {
-      id: number;
-      fullName: string;
-    };
-  }[];
-}
+// interface TravelPlan {
+//   id: number;
+//   userId: number;
+//   title: string;
+//   destination: string;
+//   startDate: string;
+//   endDate: string;
+//   minBudget: number;
+//   maxBudget: number;
+//   travelType: string;
+//   description: string;
+//   isActive: boolean;
+
+//   createdAt: string;
+//   updatedAt: string;
+
+//   image?: string | null;
+//   user: {
+//     id: number;
+//     fullName: string;
+//     profileImage?: string | null;
+//   };
+//   reviews?: {
+//     id: number;
+//     reviewerId: number;
+//     travelPlanId: number;
+//     rating: number;
+//     comment: string;
+//     reviewer: {
+//       id: number;
+//       fullName: string;
+//     };
+//   }[];
+// }
 
 export default async function TravelPlanDetailsPage({ params }: PageProps) {
   const unwrappedParams = await params;
@@ -59,7 +62,7 @@ export default async function TravelPlanDetailsPage({ params }: PageProps) {
   const plan: TravelPlan = result.data;
 
   const userData = await getUserInfo();
-  console.log(userData)
+  console.log(userData);
 
   return <TravelPlanDetailsClient plan={plan} currentUser={userData} />;
 }

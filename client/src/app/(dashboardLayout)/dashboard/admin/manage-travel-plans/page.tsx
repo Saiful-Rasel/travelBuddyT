@@ -24,6 +24,7 @@ async function getTravelPlans() {
 export default async function AdminTravelPlansPage() {
   const travelPlans = await getTravelPlans();
 
+
   return (
     <div className="p-6 space-y-4">
       <h1 className="text-2xl font-bold"> Travel Plans (Admin)</h1>

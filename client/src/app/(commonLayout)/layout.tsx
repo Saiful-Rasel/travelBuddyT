@@ -26,16 +26,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark"> 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased
+          bg-gray-50 text-gray-900 
+          dark:bg-gray-900 dark:text-gray-50`} // 
       >
-
         <div className="flex flex-col min-h-screen">
           <NavbarServer />
-          <main className="flex-1 pt-[76px] pb-[120px]">{children}</main>
+          <main className="flex-1 pt-[76px] ">
+            {children}
+          </main>
           <Toaster richColors position="top-right" />
-          <Footer />
+          <div className="mt-4">
+            <Footer  />
+          </div>
         </div>
       </body>
     </html>

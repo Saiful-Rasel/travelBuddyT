@@ -3,7 +3,7 @@ export interface Reviewer {
   fullName: string;
   profileImage?: string | null;
 }
-interface MatchRequest {
+export interface MatchRequest {
   id: number;
   message?: string;
   status: "PENDING" | "ACCEPTED" | "REJECTED";
@@ -19,6 +19,18 @@ export interface Review {
   comment?: string | null;
   reviewer: Reviewer;
 }
+export interface ItineraryItem {
+  day: number;
+  title: string;
+  description?: string;
+}
+
+interface User {
+  id: number;
+  fullName: string;
+  profileImage: string | null;
+}
+
 export interface TravelPlan {
   id: number;
   title: string;
@@ -31,6 +43,10 @@ export interface TravelPlan {
   description?: string;
   image?: string | null;
   reviews?: Review[];
-  isActive:boolean;
-   matchRequests?: MatchRequest[];
+  user?: User | null;
+  isActive: boolean;
+  matchRequests?: MatchRequest[];
+  itinerary: ItineraryItem[];
+  createdAt: string;
+  updatedAt: string;
 }

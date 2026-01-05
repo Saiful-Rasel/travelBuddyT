@@ -9,31 +9,15 @@ import { toast } from "sonner";
 import AdminCreateButton from "./createModalTravelPlan";
 import DeleteTravelPlanDialog from "../travel-plans/deleteTravelPlanModal";
 import { getCookie } from "@/service/auth/tokenHandler";
+import { TravelPlan } from "@/components/types/travelPlan";
+import { User } from "@/components/types/user";
 
-interface User {
-  id: number;
-  fullName: string;
-  profileImage: string | null;
-}
 
-export interface TravelPlan {
-  id: number;
-  title: string;
-  destination: string;
-  startDate: string;
-  endDate: string;
-  minBudget: number;
-  maxBudget: number;
-  travelType: "SOLO" | "FRIENDS" | "FAMILY";
-  isActive: boolean;
-  image: string | null;
-  createdAt: string;
-  user: User | null;
-  itinerary?: { day: number; activity: string }[];
-}
+
 
 interface TravelPlansTableProps {
   travelPlans: TravelPlan[];
+  user?: User | null;
 }
 
 export default function TravelPlansTable({

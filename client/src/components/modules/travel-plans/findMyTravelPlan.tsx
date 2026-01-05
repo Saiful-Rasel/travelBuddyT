@@ -13,41 +13,11 @@ import { toast } from "sonner";
 import UpdateModal from "./updateTravelPlanModal";
 import DeleteTravelPlanDialog from "./deleteTravelPlanModal";
 import { getCookie } from "@/service/auth/tokenHandler";
+import { TravelPlan } from "@/components/types/travelPlan";
 
-/* ================= TYPES ================= */
 
-interface MatchRequest {
-  id: number;
-  message?: string;
-  status: "PENDING" | "ACCEPTED" | "REJECTED";
-  sender: {
-    id: number;
-    fullName: string;
-    profileImage?: string;
-  };
-}
 
-interface ItineraryItem {
-  day: number;
-  activity: string;
-}
 
-interface TravelPlan {
-  id: number;
-  title: string;
-  destination: string;
-  startDate: string;
-  endDate: string;
-  minBudget?: number;
-  maxBudget?: number;
-  travelType: string;
-  description?: string;
-  image?: string | null;
-  itinerary: ItineraryItem[];
-  matchRequests: MatchRequest[];
-}
-
-/* ================= COMPONENT ================= */
 
 export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
   const [plansList, setPlansList] = useState<TravelPlan[]>(plans);
@@ -80,7 +50,7 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
       setPlansList((prev) =>
         prev.map((plan) => ({
           ...plan,
-          matchRequests: plan.matchRequests.map((req) =>
+          matchRequests: (plan.matchRequests ?? []).map((req) =>
             req.id === requestId ? { ...req, status: action } : req
           ),
         }))
@@ -122,7 +92,6 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
 
       const { data: updatedData } = await res.json();
 
-      // ✅ SAFE MERGE (KEY FIX)
       setPlansList((prev) =>
         prev.map((plan) =>
           plan.id === selectedPlan.id
@@ -247,15 +216,15 @@ export default function MyTravelPlans({ plans }: { plans: TravelPlan[] }) {
                   {/* MATCH REQUESTS */}
                   <div className="space-y-2">
                     <h3 className="font-semibold">
-                      Requests ({plan.matchRequests.length})
+                      Requests ({(plan.matchRequests ?? []).length})
                     </h3>
 
-                    {plan.matchRequests.length === 0 ? (
+                    {(plan.matchRequests ?? []).length === 0 ? (
                       <p className="text-sm text-muted-foreground">
                         No requests yet
                       </p>
                     ) : (
-                      plan.matchRequests.map((req) => (
+                      (plan.matchRequests ?? []).map((req) => (
                         <div
                           key={req.id}
                           className="flex justify-between items-center border rounded-xl p-3"
