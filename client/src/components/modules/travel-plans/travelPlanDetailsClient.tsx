@@ -137,7 +137,6 @@ export default function TravelPlanDetailsClient({ plan, currentUser }: Props) {
             currentUser={currentUser ?? null}
             planOwnerId={plan.user?.id ?? 0}
           
-           
           />
         ) : (
           <p className="text-gray-500">
@@ -146,7 +145,7 @@ export default function TravelPlanDetailsClient({ plan, currentUser }: Props) {
         )}
 
         {/* Join Trip */}
-        {plan.isActive && currentUser && (
+         (
           <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-md">
             <h2 className="text-2xl font-semibold mb-2 flex items-center gap-2">
               <FiSend /> Join this Trip?
@@ -171,7 +170,7 @@ export default function TravelPlanDetailsClient({ plan, currentUser }: Props) {
               )}
             </button>
           </div>
-        )}
+        )
       </div>
     </section>
   );

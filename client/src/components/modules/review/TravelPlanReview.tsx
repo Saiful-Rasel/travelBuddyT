@@ -12,14 +12,13 @@ interface Props {
   planId: number;
   planOwnerId: number;
   currentUser: User | null;
-  isPlanInactive?: boolean; // review allowed only if plan is inactive
 }
 
 export default function TravelPlanReviewsClient({
   planId,
   planOwnerId,
   currentUser,
-  isPlanInactive = false,
+ 
 }: Props) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewLoading, setReviewLoading] = useState(false);
@@ -42,12 +41,12 @@ export default function TravelPlanReviewsClient({
     fetchReviews();
   }, [planId]);
 
-  // check if current user already reviewed
+  
   const existingReview = currentUser
     ? reviews.find((r) => r.reviewer?.id === currentUser.id) ?? null
     : null;
 
-  // prefill form if editing
+
   useEffect(() => {
     if (existingReview) {
       setRating(existingReview.rating);
@@ -60,9 +59,9 @@ export default function TravelPlanReviewsClient({
     }
   }, [existingReview]);
 
-  // user can create if inactive & no existing review
+ 
   const canCreateReview =  !existingReview;
-  // user can edit if inactive & has existing review
+ 
   const canEditReview = existingReview;
 
   const handleSubmitReview = async () => {
@@ -131,7 +130,7 @@ export default function TravelPlanReviewsClient({
         <FiStar /> Reviews
       </h2>
 
-      {/* Show form only for plan owner / reviewer */}
+   
       {(canCreateReview || canEditReview) && (
         <div className="flex flex-col gap-2 border p-3 rounded-md dark:border-gray-700">
           <div className="flex items-center gap-2 mb-2">

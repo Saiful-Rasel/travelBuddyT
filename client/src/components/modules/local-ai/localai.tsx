@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { User } from "@/components/types/user";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { getCookie } from "@/service/auth/tokenHandler";
 
 interface Props {
