@@ -29,15 +29,10 @@ interface UpdateModalProps {
   onSubmit: (formData: FormData) => Promise<void>;
 }
 
-export default function UpdateModal({
-  isOpen,
-  onClose,
-  initialData,
-  onSubmit,
-}: UpdateModalProps) {
+export default function UpdateModal({ isOpen, onClose, initialData, onSubmit }: UpdateModalProps) {
   const mapToFormItinerary = (itinerary: ItineraryItem[]): FormItineraryItem[] =>
     itinerary.length
-      ? itinerary.map((item) => ({ day: item.day, activity: item.title }))
+      ? itinerary.map((item) => ({ day: item.day, activity: item.title ?? "" }))
       : [{ day: 1, activity: "" }];
 
   const [formData, setFormData] = useState({
@@ -66,10 +61,7 @@ export default function UpdateModal({
     const { name, value } = e.target;
 
     if (name === "minBudget" || name === "maxBudget") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value === "" ? 0 : Number(value),
-      }));
+      setFormData((prev) => ({ ...prev, [name]: value === "" ? 0 : Number(value) }));
       return;
     }
 
@@ -82,9 +74,9 @@ export default function UpdateModal({
 
   const handleItineraryChange = (index: number, value: string) => {
     const updated = [...formData.itinerary];
-    updated[index].activity = value;
+    updated[index].activity = value || "";
 
-    if (index === updated.length - 1 && value.trim()) {
+    if (index === updated.length - 1 && value.trim() !== "") {
       updated.push({ day: updated.length + 1, activity: "" });
     }
 
@@ -93,8 +85,8 @@ export default function UpdateModal({
 
   const mapToApiItinerary = (itinerary: FormItineraryItem[]): ItineraryItem[] =>
     itinerary
-      .filter((i) => i.activity.trim())
-      .map((i, idx) => ({ day: idx + 1, title: i.activity }));
+      .filter((i) => typeof i.activity === "string" && i.activity.trim() !== "")
+      .map((i, idx) => ({ day: idx + 1, title: i.activity.trim() }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,7 +107,6 @@ export default function UpdateModal({
 
       const fd = new FormData();
       fd.append("data", JSON.stringify(payload));
-
       if (imageFile) fd.append("file", imageFile);
 
       await onSubmit(fd);

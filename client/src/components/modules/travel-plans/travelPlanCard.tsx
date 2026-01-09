@@ -116,45 +116,11 @@ export default function TravelPlanCard({
         {/* ================= Reviews Section ================= */}
         {!isActive && (
           <div className="pt-3 space-y-2 max-h-28 overflow-hidden">
-            {reviews.length > 0 ? (
-              reviews.slice(0, 2).map((rev) => (
-                <div
-                  key={rev.id}
-                  className="flex gap-2 bg-yellow-50 dark:bg-yellow-900
-                             rounded-md p-2 text-sm"
-                >
-                  {rev.reviewer.profileImage ? (
-                    <Image
-                      src={rev.reviewer.profileImage}
-                      alt={rev.reviewer.fullName}
-                      width={24}
-                      height={24}
-                      className="rounded-full flex-shrink-0"
-                    />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-gray-400 flex-shrink-0" />
-                  )}
+           
 
-                  <div className="min-w-0">
-                    <p className="font-semibold text-yellow-800 dark:text-yellow-300 truncate">
-                      {rev.reviewer.fullName}
-                    </p>
-                    <p className="text-yellow-700 dark:text-yellow-200 line-clamp-1">
-                      ⭐ {rev.rating}
-                      {rev.comment && ` – ${rev.comment}`}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-gray-400 dark:text-gray-500">
-                No reviews yet
-              </p>
-            )}
-
-            {reviews.length > 2 && (
+            {reviews.length > 1 && (
               <Link
-                href={`/travel-plans/${id}/reviews`}
+                href={`/travel-plans/${id}`}
                 className="text-blue-600 dark:text-blue-400 text-sm hover:underline"
               >
                 See all {reviews.length} reviews →
