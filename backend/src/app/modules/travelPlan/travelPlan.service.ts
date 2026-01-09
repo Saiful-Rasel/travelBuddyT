@@ -73,13 +73,17 @@ const getMyTravelPlans = async (user: any) => {
       matchRequests: {
         include: {
           sender: { select: { id: true, fullName: true, profileImage: true } },
-          receiver: { select: { id: true, fullName: true, profileImage: true } },
+          receiver: {
+            select: { id: true, fullName: true, profileImage: true },
+          },
         },
         orderBy: { createdAt: "desc" },
       },
       reviews: {
         include: {
-          reviewer: { select: { id: true, fullName: true, profileImage: true } },
+          reviewer: {
+            select: { id: true, fullName: true, profileImage: true },
+          },
         },
       },
     },
@@ -96,7 +100,10 @@ const getSingleTravelPlan = async (id: number) => {
     });
     return plan;
   } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2025"
+    ) {
       throw new AppError(httpStatus.NOT_FOUND, "Travel plan not found");
     }
     throw err;
@@ -149,17 +156,40 @@ const getFeedTravelPlans = async (
   options: IOptions,
   filters: any
 ) => {
-  const { page, limit, skip, sortBy, sortOrder } = paginationHelper.calculatePagination(options);
-  const { destination, travelType, minBudget, maxBudget, isActive, startDate, endDate, latitude, longitude } = filters;
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelper.calculatePagination(options);
+  const {
+    destination,
+    travelType,
+    minBudget,
+    maxBudget,
+    isActive,
+    startDate,
+    endDate,
+    latitude,
+    longitude,
+  } = filters;
 
   const whereConditions: any = { NOT: { userId } };
 
   if (isActive !== undefined) whereConditions.isActive = isActive === "true";
-  if (destination) whereConditions.destination = { contains: destination, mode: "insensitive" };
+  if (destination)
+    whereConditions.destination = {
+      contains: destination,
+      mode: "insensitive",
+    };
   if (startDate || endDate) {
     whereConditions.AND = [
-      { startDate: { lte: endDate ? new Date(endDate) : new Date("9999-12-31") } },
-      { endDate: { gte: startDate ? new Date(startDate) : new Date("0001-01-01") } },
+      {
+        startDate: {
+          lte: endDate ? new Date(endDate) : new Date("9999-12-31"),
+        },
+      },
+      {
+        endDate: {
+          gte: startDate ? new Date(startDate) : new Date("0001-01-01"),
+        },
+      },
     ];
   }
   if (minBudget) whereConditions.minBudget = { gte: Number(minBudget) };
@@ -175,7 +205,13 @@ const getFeedTravelPlans = async (
     orderBy: { [sortBy]: sortOrder },
     include: {
       user: { select: { id: true, fullName: true, profileImage: true } },
-      reviews: { include: { reviewer: { select: { id: true, fullName: true, profileImage: true } } } },
+      reviews: {
+        include: {
+          reviewer: {
+            select: { id: true, fullName: true, profileImage: true },
+          },
+        },
+      },
     },
   });
 
@@ -184,34 +220,27 @@ const getFeedTravelPlans = async (
   return { meta: { page, limit, total }, data };
 };
 
-const getMatchedTravelPlans = async (userId: number, planId: number) => {
-  const myPlan = await prisma.travelPlan.findFirst({ where: { id: planId, userId } });
-
-  if (!myPlan) throw new AppError(httpStatus.NOT_FOUND, "Travel plan not found");
-  if (myPlan.startDate > myPlan.endDate) throw new AppError(httpStatus.BAD_REQUEST, "Invalid travel plan dates");
-
-  const baseConditions: any = {
-    userId: { not: userId },
-    isActive: true,
-    destination: { contains: myPlan.destination, mode: "insensitive" },
-    travelType: myPlan.travelType,
-    AND: [
-      { startDate: { lte: myPlan.endDate } },
-      { endDate: { gte: myPlan.startDate } },
-    ],
-    minBudget: { lte: myPlan.maxBudget },
-    maxBudget: { gte: myPlan.minBudget },
-  };
-
-  const excludedRequests = await prisma.matchRequest.findMany({ where: { senderId: userId }, select: { travelPlanId: true } });
-  const excludeIds = excludedRequests.map((r) => r.travelPlanId);
-  if (excludeIds.length > 0) baseConditions.id = { notIn: excludeIds };
-
-  return await prisma.travelPlan.findMany({
-    where: baseConditions,
-    include: { user: { select: { id: true, fullName: true, profileImage: true } } },
-    orderBy: { createdAt: "desc" },
+const getAcceptedUserTravelPlan = async (planId: number) => {
+  const plan = await prisma.travelPlan.findUnique({
+    where: { id: planId },
+    include: {
+      matchRequests: {
+        where: { status: "ACCEPTED" },
+        select: {
+          senderId: true,
+          receiverId: true,
+        },
+      },
+    },
   });
+
+  if (!plan) throw new Error("Travel plan not found");
+
+  const acceptedUserIds = plan.matchRequests.flatMap((m) => [m.senderId, m.receiverId]);
+
+  const uniqueAcceptedUserIds = Array.from(new Set(acceptedUserIds));
+
+  return uniqueAcceptedUserIds; 
 };
 
 export const travelPlanService = {
@@ -221,6 +250,6 @@ export const travelPlanService = {
   getSingleTravelPlan,
   updateTravelPlan,
   deleteTravelPlan,
-  getMatchedTravelPlans,
+  getAcceptedUserTravelPlan,
   getFeedTravelPlans,
 };

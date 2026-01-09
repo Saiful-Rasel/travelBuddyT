@@ -22,7 +22,6 @@ const createTravelPlan = catchAsync(
   }
 );
 
-
 const getAllTravelPlans = catchAsync(async (req: Request, res: Response) => {
   const result = await travelPlanService.getAllTravelPlans();
 
@@ -34,11 +33,9 @@ const getAllTravelPlans = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 const getMyTravelPlans = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
     const result = await travelPlanService.getMyTravelPlans(req.user);
-   
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -48,7 +45,6 @@ const getMyTravelPlans = catchAsync(
     });
   }
 );
-
 
 const getSingleTravelPlan = catchAsync(async (req: Request, res: Response) => {
   const result = await travelPlanService.getSingleTravelPlan(
@@ -63,9 +59,7 @@ const getSingleTravelPlan = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-
- const updateTravelPlan = catchAsync(
+const updateTravelPlan = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
     const travelPlanId = Number(req.params.id);
     const userId = req.user?.id;
@@ -75,11 +69,10 @@ const getSingleTravelPlan = catchAsync(async (req: Request, res: Response) => {
       req.body.image = uploadResult?.secure_url;
     }
 
-
     const result = await travelPlanService.updateTravelPlan({
       userId,
       planId: travelPlanId,
-      payload: req.body
+      payload: req.body,
     });
 
     sendResponse(res, {
@@ -90,7 +83,6 @@ const getSingleTravelPlan = catchAsync(async (req: Request, res: Response) => {
     });
   }
 );
-
 
 const deleteTravelPlan = catchAsync(
   async (req: Request & { user?: any }, res: Response) => {
@@ -108,47 +100,49 @@ const deleteTravelPlan = catchAsync(
   }
 );
 
+const getFeedTravelPlans = catchAsync(
+  async (req: Request & { user?: any }, res: Response) => {
+    const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+    const fillters = pick(req.query, [
+      "destination",
+      "startDate",
+      "endDate",
+      "minBudget",
+      "maxBudget",
+      "travelType",
+      "isActive",
+      "latitude",
+      "longitude",
+    ]);
+    const plans = await travelPlanService.getFeedTravelPlans(
+      req.user?.id,
+      options,
+      fillters
+    );
 
-const getFeedTravelPlans = catchAsync(async (req: Request & { user?: any }, res: Response) => {
-const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
-  const fillters = pick(req.query,  [
-  "destination",
-  "startDate",
-  "endDate",
-  "minBudget",
-  "maxBudget",
-  "travelType",
-  "isActive",
-  "latitude",
-  "longitude"
-])
-  const plans = await travelPlanService.getFeedTravelPlans(req.user?.id, options, fillters);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "All active travel plans retrieved successfully",
+      data: plans,
+    });
+  }
+);
 
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "All active travel plans retrieved successfully",
-    data: plans,
-  });
-});
+const getAcceptedUserTravelPlan = catchAsync(
+  async (req: Request, res: Response) => {
+    const planId = Number(req.params.planId);
 
+    const result = await travelPlanService.getAcceptedUserTravelPlan(planId);
 
-
-const getMatchedTravelPlans = catchAsync(async (req: Request & { user?: any }, res: Response) => {
-  const loggedInUserId = req.user?.id;
-const planId = Number(req.params.planId);
-  
-  const matched = await travelPlanService.getMatchedTravelPlans(loggedInUserId, planId);
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Matched travel plans retrieved successfully",
-    data: matched,
-  });
-});
-
-
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Accepted user travel plans retrieved successfully",
+      data: result,
+    });
+  }
+);
 
 export const travelPlanController = {
   createTravelPlan,
@@ -158,5 +152,5 @@ export const travelPlanController = {
   updateTravelPlan,
   deleteTravelPlan,
   getFeedTravelPlans,
-  getMatchedTravelPlans
+  getAcceptedUserTravelPlan,
 };

@@ -10,8 +10,9 @@ const authGuard_1 = __importDefault(require("../../middleware/authGuard"));
 const reviews_controller_1 = require("./reviews.controller");
 const router = express_1.default.Router();
 router.post("/", (0, authGuard_1.default)(client_1.Role.USER, client_1.Role.ADMIN), reviews_controller_1.reviewController.createReviewController);
-router.get("/:travelPlanId", reviews_controller_1.reviewController.getReviewsByTravelPlanController);
-router.get("/user/:userId", reviews_controller_1.reviewController.getReviewsForUserController);
+// get all review by travelPLan 
+router.get("/:travelPlanId", reviews_controller_1.reviewController.getReviewsByTravelPlan);
+router.get("/user/:userId", reviews_controller_1.reviewController.getReviewsForUser);
 router.patch("/:reviewId", (0, authGuard_1.default)(client_1.Role.USER, client_1.Role.ADMIN), reviews_controller_1.reviewController.updateReviewController);
 router.delete("/:reviewId", (0, authGuard_1.default)(client_1.Role.USER, client_1.Role.ADMIN), reviews_controller_1.reviewController.deleteReviewController);
 exports.reviewRoutes = router;

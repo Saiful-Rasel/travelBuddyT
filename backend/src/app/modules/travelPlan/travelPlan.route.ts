@@ -10,15 +10,10 @@ const router = express.Router();
 
 router.get(
   "/feed",
-
   travelPlanController.getFeedTravelPlans
 );
 
-router.get(
-  "/:planId/matches",
-  auth(Role.USER, Role.ADMIN),
-  travelPlanController.getMatchedTravelPlans
-);
+
 
 router.post(
   "/",
@@ -34,13 +29,15 @@ router.post(
   }
 );
 
-router.get("/",auth(Role.ADMIN), travelPlanController.getAllTravelPlans);
+router.get("/", auth(Role.ADMIN), travelPlanController.getAllTravelPlans);
 
 router.get(
   "/my",
   auth(Role.USER, Role.ADMIN),
   travelPlanController.getMyTravelPlans
 );
+
+router.get("/acceptedusers/:planId", travelPlanController.getAcceptedUserTravelPlan);
 
 router.get("/:id", travelPlanController.getSingleTravelPlan);
 
@@ -66,8 +63,5 @@ router.delete(
   auth(Role.USER, Role.ADMIN),
   travelPlanController.deleteTravelPlan
 );
-
-
-
 
 export const travelPlanRoutes = router;

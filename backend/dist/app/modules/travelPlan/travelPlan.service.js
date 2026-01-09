@@ -65,13 +65,17 @@ const getMyTravelPlans = (user) => __awaiter(void 0, void 0, void 0, function* (
             matchRequests: {
                 include: {
                     sender: { select: { id: true, fullName: true, profileImage: true } },
-                    receiver: { select: { id: true, fullName: true, profileImage: true } },
+                    receiver: {
+                        select: { id: true, fullName: true, profileImage: true },
+                    },
                 },
                 orderBy: { createdAt: "desc" },
             },
             reviews: {
                 include: {
-                    reviewer: { select: { id: true, fullName: true, profileImage: true } },
+                    reviewer: {
+                        select: { id: true, fullName: true, profileImage: true },
+                    },
                 },
             },
         },
@@ -88,7 +92,8 @@ const getSingleTravelPlan = (id) => __awaiter(void 0, void 0, void 0, function* 
         return plan;
     }
     catch (err) {
-        if (err instanceof client_2.Prisma.PrismaClientKnownRequestError && err.code === "P2025") {
+        if (err instanceof client_2.Prisma.PrismaClientKnownRequestError &&
+            err.code === "P2025") {
             throw new appError_1.default(http_status_1.default.NOT_FOUND, "Travel plan not found");
         }
         throw err;
@@ -127,16 +132,27 @@ const deleteTravelPlan = (user, planId) => __awaiter(void 0, void 0, void 0, fun
 });
 const getFeedTravelPlans = (userId, options, filters) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelper.calculatePagination(options);
-    const { destination, travelType, minBudget, maxBudget, isActive, startDate, endDate, latitude, longitude } = filters;
+    const { destination, travelType, minBudget, maxBudget, isActive, startDate, endDate, latitude, longitude, } = filters;
     const whereConditions = { NOT: { userId } };
     if (isActive !== undefined)
         whereConditions.isActive = isActive === "true";
     if (destination)
-        whereConditions.destination = { contains: destination, mode: "insensitive" };
+        whereConditions.destination = {
+            contains: destination,
+            mode: "insensitive",
+        };
     if (startDate || endDate) {
         whereConditions.AND = [
-            { startDate: { lte: endDate ? new Date(endDate) : new Date("9999-12-31") } },
-            { endDate: { gte: startDate ? new Date(startDate) : new Date("0001-01-01") } },
+            {
+                startDate: {
+                    lte: endDate ? new Date(endDate) : new Date("9999-12-31"),
+                },
+            },
+            {
+                endDate: {
+                    gte: startDate ? new Date(startDate) : new Date("0001-01-01"),
+                },
+            },
         ];
     }
     if (minBudget)
@@ -156,39 +172,36 @@ const getFeedTravelPlans = (userId, options, filters) => __awaiter(void 0, void 
         orderBy: { [sortBy]: sortOrder },
         include: {
             user: { select: { id: true, fullName: true, profileImage: true } },
-            reviews: { include: { reviewer: { select: { id: true, fullName: true, profileImage: true } } } },
+            reviews: {
+                include: {
+                    reviewer: {
+                        select: { id: true, fullName: true, profileImage: true },
+                    },
+                },
+            },
         },
     });
     const total = yield prisma_1.default.travelPlan.count({ where: whereConditions });
     return { meta: { page, limit, total }, data };
 });
-const getMatchedTravelPlans = (userId, planId) => __awaiter(void 0, void 0, void 0, function* () {
-    const myPlan = yield prisma_1.default.travelPlan.findFirst({ where: { id: planId, userId } });
-    if (!myPlan)
-        throw new appError_1.default(http_status_1.default.NOT_FOUND, "Travel plan not found");
-    if (myPlan.startDate > myPlan.endDate)
-        throw new appError_1.default(http_status_1.default.BAD_REQUEST, "Invalid travel plan dates");
-    const baseConditions = {
-        userId: { not: userId },
-        isActive: true,
-        destination: { contains: myPlan.destination, mode: "insensitive" },
-        travelType: myPlan.travelType,
-        AND: [
-            { startDate: { lte: myPlan.endDate } },
-            { endDate: { gte: myPlan.startDate } },
-        ],
-        minBudget: { lte: myPlan.maxBudget },
-        maxBudget: { gte: myPlan.minBudget },
-    };
-    const excludedRequests = yield prisma_1.default.matchRequest.findMany({ where: { senderId: userId }, select: { travelPlanId: true } });
-    const excludeIds = excludedRequests.map((r) => r.travelPlanId);
-    if (excludeIds.length > 0)
-        baseConditions.id = { notIn: excludeIds };
-    return yield prisma_1.default.travelPlan.findMany({
-        where: baseConditions,
-        include: { user: { select: { id: true, fullName: true, profileImage: true } } },
-        orderBy: { createdAt: "desc" },
+const getAcceptedUserTravelPlan = (planId) => __awaiter(void 0, void 0, void 0, function* () {
+    const plan = yield prisma_1.default.travelPlan.findUnique({
+        where: { id: planId },
+        include: {
+            matchRequests: {
+                where: { status: "ACCEPTED" },
+                select: {
+                    senderId: true,
+                    receiverId: true,
+                },
+            },
+        },
     });
+    if (!plan)
+        throw new Error("Travel plan not found");
+    const acceptedUserIds = plan.matchRequests.flatMap((m) => [m.senderId, m.receiverId]);
+    const uniqueAcceptedUserIds = Array.from(new Set(acceptedUserIds));
+    return uniqueAcceptedUserIds;
 });
 exports.travelPlanService = {
     createTravelPlan,
@@ -197,6 +210,6 @@ exports.travelPlanService = {
     getSingleTravelPlan,
     updateTravelPlan,
     deleteTravelPlan,
-    getMatchedTravelPlans,
+    getAcceptedUserTravelPlan,
     getFeedTravelPlans,
 };

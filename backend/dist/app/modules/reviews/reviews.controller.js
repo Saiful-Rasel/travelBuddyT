@@ -27,8 +27,7 @@ const createReviewController = (0, catchAsync_1.default)((req, res) => __awaiter
         data: review,
     });
 }));
-// Get all reviews for a travel plan
-const getReviewsByTravelPlanController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getReviewsByTravelPlan = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { travelPlanId } = req.params;
     const reviews = yield reviews_service_1.reviewService.getReviewsByTravelPlan(Number(travelPlanId));
     (0, sendResponse_1.default)(res, {
@@ -38,11 +37,9 @@ const getReviewsByTravelPlanController = (0, catchAsync_1.default)((req, res) =>
         data: reviews,
     });
 }));
-const getReviewsForUserController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getReviewsForUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId } = req.params;
-    console.log("Requested userId:", userId);
     const reviews = yield reviews_service_1.reviewService.getReviewsForUser(Number(userId));
-    console.log("Reviews found:", reviews);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
         success: true,
@@ -73,8 +70,8 @@ const deleteReviewController = (0, catchAsync_1.default)((req, res) => __awaiter
 }));
 exports.reviewController = {
     createReviewController,
-    getReviewsByTravelPlanController,
-    getReviewsForUserController,
+    getReviewsByTravelPlan,
+    getReviewsForUser,
     updateReviewController,
     deleteReviewController,
 };

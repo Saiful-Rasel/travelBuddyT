@@ -68,6 +68,7 @@ const getReviewsByTravelPlan = async (travelPlanId: number) => {
 };
 
 const getReviewsForUser = async (userId: number) => {
+  console.log("review",userId)
   return await prisma.review.findMany({
     where: { reviewedId: userId },
     include: {

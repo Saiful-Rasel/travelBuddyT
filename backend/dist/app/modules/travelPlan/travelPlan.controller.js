@@ -66,7 +66,7 @@ const updateTravelPlan = (0, catchAsync_1.default)((req, res) => __awaiter(void 
     const result = yield travelPlan_service_1.travelPlanService.updateTravelPlan({
         userId,
         planId: travelPlanId,
-        payload: req.body
+        payload: req.body,
     });
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
@@ -96,7 +96,7 @@ const getFeedTravelPlans = (0, catchAsync_1.default)((req, res) => __awaiter(voi
         "travelType",
         "isActive",
         "latitude",
-        "longitude"
+        "longitude",
     ]);
     const plans = yield travelPlan_service_1.travelPlanService.getFeedTravelPlans((_a = req.user) === null || _a === void 0 ? void 0 : _a.id, options, fillters);
     (0, sendResponse_1.default)(res, {
@@ -106,16 +106,14 @@ const getFeedTravelPlans = (0, catchAsync_1.default)((req, res) => __awaiter(voi
         data: plans,
     });
 }));
-const getMatchedTravelPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const loggedInUserId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+const getAcceptedUserTravelPlan = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const planId = Number(req.params.planId);
-    const matched = yield travelPlan_service_1.travelPlanService.getMatchedTravelPlans(loggedInUserId, planId);
+    const result = yield travelPlan_service_1.travelPlanService.getAcceptedUserTravelPlan(planId);
     (0, sendResponse_1.default)(res, {
-        statusCode: 200,
+        statusCode: http_status_1.default.OK,
         success: true,
-        message: "Matched travel plans retrieved successfully",
-        data: matched,
+        message: "Accepted user travel plans retrieved successfully",
+        data: result,
     });
 }));
 exports.travelPlanController = {
@@ -126,5 +124,5 @@ exports.travelPlanController = {
     updateTravelPlan,
     deleteTravelPlan,
     getFeedTravelPlans,
-    getMatchedTravelPlans
+    getAcceptedUserTravelPlan,
 };

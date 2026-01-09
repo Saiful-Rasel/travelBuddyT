@@ -64,6 +64,7 @@ const getReviewsByTravelPlan = (travelPlanId) => __awaiter(void 0, void 0, void 
     });
 });
 const getReviewsForUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("review", userId);
     return yield prisma_1.default.review.findMany({
         where: { reviewedId: userId },
         include: {

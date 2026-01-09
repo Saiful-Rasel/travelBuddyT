@@ -7,6 +7,9 @@ import { User } from "@/components/types/user";
 import { getCookie } from "@/service/auth/tokenHandler";
 import { toast } from "sonner";
 import { FiStar } from "react-icons/fi";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import EditModal from "./TravelPlanReviewEditModal";
+import DeleteModal from "./ReviewDeleteModal";
 
 interface Props {
   planId: number;
@@ -18,67 +21,91 @@ export default function TravelPlanReviewsClient({
   planId,
   planOwnerId,
   currentUser,
- 
 }: Props) {
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [reviewLoading, setReviewLoading] = useState(false);
+  const [acceptedUserIds, setAcceptedUserIds] = useState<number[]>([]);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
+  const [activeReviewId, setActiveReviewId] = useState<number | null>(null);
+  const [deleteReviewId, setDeleteReviewId] = useState<number | null>(null);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // fetch all reviews for this travel plan
+  const fetchReviews = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/reviews/${planId}`
+      );
+      if (!res.ok) throw new Error("Failed to fetch reviews");
+      const data = await res.json();
+      setReviews(data.data ?? []);
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchReviews = async () => {
+    fetchReviews();
+  }, [planId]);
+
+  useEffect(() => {
+    const fetchAcceptedUsers = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/reviews/${planId}`);
-        if (!res.ok) throw new Error("Failed to fetch reviews");
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/acceptedusers/${planId}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch accepted users");
         const data = await res.json();
-        setReviews(data.data ?? []);
+        setAcceptedUserIds(data.data || []);
       } catch (err: any) {
         console.error(err);
       }
     };
-    fetchReviews();
+    fetchAcceptedUsers();
   }, [planId]);
 
-  
-  const existingReview = currentUser
+  const hasReviewed = currentUser
+    ? reviews.some((r) => r.reviewer?.id === currentUser.id)
+    : false;
+
+  const userReview = currentUser
     ? reviews.find((r) => r.reviewer?.id === currentUser.id) ?? null
     : null;
 
-
   useEffect(() => {
-    if (existingReview) {
-      setRating(existingReview.rating);
-      setComment(existingReview.comment ?? "");
-      setEditingReviewId(existingReview.id);
+    if (userReview) {
+      setRating(userReview.rating);
+      setComment(userReview.comment || "");
     } else {
       setRating(5);
       setComment("");
       setEditingReviewId(null);
     }
-  }, [existingReview]);
-
- 
-  const canCreateReview =  !existingReview;
- 
-  const canEditReview = existingReview;
+  }, [userReview]);
 
   const handleSubmitReview = async () => {
     if (!currentUser) return toast.error("Login to submit a review");
     setReviewLoading(true);
     try {
       const token = await getCookie("accessToken");
-      const payload = { reviewedId: planOwnerId, travelPlanId: planId, rating, comment };
+      const payload = {
+        reviewedId: planOwnerId,
+        travelPlanId: planId,
+        rating,
+        comment,
+      };
       const url = editingReviewId
         ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/reviews/${editingReviewId}`
         : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/reviews`;
-
       const method = editingReviewId ? "PATCH" : "POST";
 
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
       });
 
@@ -86,15 +113,20 @@ export default function TravelPlanReviewsClient({
       const newReview = (await res.json()).data;
 
       if (editingReviewId) {
-        setReviews((prev) => prev.map((r) => (r.id === editingReviewId ? newReview : r)));
+        setReviews((prev) =>
+          prev.map((r) => (r.id === editingReviewId ? newReview : r))
+        );
       } else {
         setReviews((prev) => [...prev, newReview]);
       }
 
       toast.success("Review submitted!");
-      setRating(5);
-      setComment("");
+
+ 
+      await fetchReviews();
+      setIsEditModalOpen(false);
       setEditingReviewId(null);
+      setActiveReviewId(null);
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
     } finally {
@@ -102,21 +134,21 @@ export default function TravelPlanReviewsClient({
     }
   };
 
-  const handleDeleteReview = async () => {
-    if (!currentUser || !existingReview) return;
+  const handleDeleteReview = async (reviewId: number) => {
+    if (!currentUser) return toast.error("Login required");
     setReviewLoading(true);
     try {
       const token = await getCookie("accessToken");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/reviews/${existingReview.id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/reviews/${reviewId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (!res.ok) throw new Error("Failed to delete review");
-      setReviews((prev) => prev.filter((r) => r.id !== existingReview.id));
+      setReviews((prev) => prev.filter((r) => r.id !== reviewId));
       toast.success("Review deleted");
-      setRating(5);
-      setComment("");
-      setEditingReviewId(null);
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
     } finally {
@@ -130,57 +162,126 @@ export default function TravelPlanReviewsClient({
         <FiStar /> Reviews
       </h2>
 
-   
-      {(canCreateReview || canEditReview) && (
-        <div className="flex flex-col gap-2 border p-3 rounded-md dark:border-gray-700">
-          <div className="flex items-center gap-2 mb-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button key={star} type="button" onClick={() => setRating(star)}>
-                <span className={`text-2xl ${star <= rating ? "text-yellow-400" : "text-gray-400"}`}>★</span>
-              </button>
-            ))}
-          </div>
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            rows={3}
-            placeholder="Write your review..."
-            className="border p-2 rounded-md w-full dark:bg-gray-800 dark:text-white"
-          />
-          <div className="flex gap-2">
+      {currentUser &&
+        acceptedUserIds.includes(currentUser.id) &&
+        currentUser.id !== planOwnerId &&
+        !hasReviewed && (
+          <div className="flex flex-col gap-2 border p-3 rounded-md dark:border-gray-700">
+            <div className="flex items-center gap-2 mb-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button key={star} onClick={() => setRating(star)}>
+                  <span
+                    className={`text-2xl cursor-pointer ${
+                      star <= rating ? "text-yellow-400" : "text-gray-400"
+                    }`}
+                  >
+                    ★
+                  </span>
+                </button>
+              ))}
+            </div>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              rows={3}
+              className="border p-2 rounded-md w-full dark:bg-gray-800 dark:text-white"
+            />
             <button
               onClick={handleSubmitReview}
               disabled={reviewLoading}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+              className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
             >
-              {editingReviewId ? "Update" : "Submit"}
+              {editingReviewId ? "Update Review" : "Submit"}
             </button>
-            {canEditReview && (
-              <button
-                onClick={handleDeleteReview}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-              >
-                Delete
-              </button>
-            )}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Show all reviews */}
       <ul className="space-y-2">
         {reviews.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400">No reviews yet.</p>
         ) : (
           reviews.map((r) => (
-            <li key={r.id} className="p-3 bg-gray-100 dark:bg-gray-800 rounded flex flex-col gap-1">
-              <span className="font-semibold">{r.reviewer?.fullName}</span>
-              <span>⭐ {r.rating}</span>
-              <p>{r.comment || "-"}</p>
+            <li
+              key={r.id}
+              className="p-3 bg-gray-100 dark:bg-gray-800 rounded flex flex-col gap-1"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-semibold">
+                    Name: {r.reviewer?.fullName}
+                  </span>
+                  <span className="font-semibold flex items-center gap-1">
+                    Ratings:{" "}
+                    {[...Array(r.rating)].map((_, i) => (
+                      <span key={i}>⭐</span>
+                    ))}
+                  </span>
+                  <p className="font-semibold">Comment: {r.comment || "-"}</p>
+                </div>
+
+                {/* three dot edit delete */}
+
+                {currentUser?.id === r.reviewer?.id && (
+                  <div className="relative">
+                    <BsThreeDotsVertical
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setActiveReviewId(activeReviewId === r.id ? null : r.id)
+                      }
+                    />
+                    {activeReviewId === r.id && (
+                      <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-700 border rounded shadow-md z-10">
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600"
+                          onClick={() => {
+                            setEditingReviewId(r.id);
+                            setRating(r.rating);
+                            setIsEditModalOpen(true);
+                            setComment(r.comment || "");
+                            setActiveReviewId(null);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 text-red-600"
+                          onClick={() => {
+                            setDeleteReviewId(r.id);
+                            setActiveReviewId(null);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </li>
           ))
         )}
       </ul>
+
+      <EditModal
+        isOpen={editingReviewId !== null}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingReviewId(null);
+        }}
+        rating={rating}
+        comment={comment}
+        onChangeRating={setRating}
+        onChangeComment={setComment}
+        onSubmit={handleSubmitReview}
+      />
+      <DeleteModal
+        isOpen={deleteReviewId !== null}
+        onClose={() => setDeleteReviewId(null)}
+        onDelete={() => {
+          if (deleteReviewId) handleDeleteReview(deleteReviewId);
+          setDeleteReviewId(null);
+        }}
+      />
     </div>
   );
 }

@@ -163,7 +163,7 @@ export default function TravelPlanCard({
           </div>
         )}
 
-        {/* ================= CTA (Always Bottom) ================= */}
+       
         <div className="mt-auto pt-4">
           <Link
             href={`/travel-plans/${id}`}

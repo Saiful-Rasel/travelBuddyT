@@ -9,11 +9,11 @@ const router = express.Router();
 
 router.post("/", auth(Role.USER, Role.ADMIN), reviewController.createReviewController);
 
+// get all review by travelPLan 
+router.get("/:travelPlanId", reviewController.getReviewsByTravelPlan);
 
-router.get("/:travelPlanId", reviewController.getReviewsByTravelPlanController);
 
-
-router.get("/user/:userId", reviewController.getReviewsForUserController);
+router.get("/user/:userId", reviewController.getReviewsForUser);
 
 
 router.patch("/:reviewId", auth(Role.USER, Role.ADMIN), reviewController.updateReviewController);
