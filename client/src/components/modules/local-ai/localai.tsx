@@ -35,7 +35,7 @@ export default function PremiumItineraryClient({
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tranId = searchParams.get("tran_id"); // payment redirect
+  const tranId = searchParams.get("tran_id"); 
   const [destination, setDestination] = useState("");
   const [itinerary, setItinerary] = useState<ItineraryData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -247,10 +247,10 @@ export default function PremiumItineraryClient({
               ? `Hello, ${currentUser.fullName}`
               : "Unlock AI Travel Itinerary"}
           </p>
-          <p className="text-white mb-4">Premium service fee: {amount} BDT</p>
+          <p className="text-white md:text-xl font-semibold mb-4">Premium service fee: {amount} BDT</p>
           <Button
             size="lg"
-            className="bg-white text-black hover:bg-gray-100 rounded-lg"
+            className="bg-white text-blue-600  hover:bg-gray-100 rounded-lg"
             onClick={handleUnlock}
           >
             Unlock AI Service

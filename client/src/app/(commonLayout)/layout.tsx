@@ -32,13 +32,13 @@ export default function RootLayout({
           bg-gray-50 text-gray-900 
           dark:bg-gray-900 dark:text-gray-50`} // 
       >
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col ">
           <NavbarServer />
           <main className="flex-1 pt-[76px] ">
             {children}
           </main>
           <Toaster richColors position="top-right" />
-          <div className="mt-4">
+          <div className="">
             <Footer  />
           </div>
         </div>

@@ -47,14 +47,14 @@ export default function NavbarClient({ currentUser }: NavbarClientProps) {
   ];
 
   return (
-    <nav className="w-full px-4 md:px-10 py-4 fixed top-0 z-50 flex justify-between items-center shadow-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <nav className="w-full px-4 py-4 fixed top-0 z-50 flex justify-between items-center shadow-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       {/* Logo */}
       <Link href="/" className="text-xl font-bold text-blue-600 dark:text-blue-400">
         TravelBuddy
       </Link>
 
       {/* Desktop Menu */}
-      <div className="hidden md:flex items-center gap-6">
+      <div className="hidden md:flex items-center gap-6 ">
         {links.map((link, idx) => {
           if (link.role && link.role !== currentUser?.role) return null;
           if (link.guestOnly && currentUser) return null;

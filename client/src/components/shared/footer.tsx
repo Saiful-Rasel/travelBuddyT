@@ -1,19 +1,22 @@
 // components/shared/footer.tsx
 "use client";
 
+import Link from "next/link";
+
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <footer className="bg-white dark:bg-gray-950 text-gray-900 shadow dark:text-gray-100 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between gap-8">
         
         {/* About Section */}
         <div className="flex-1">
-          <h3 className="text-xl font-bold mb-4 text-blue-600 dark:text-blue-400">
-            TravelBuddy
+          <h3 className="text-xl font-bold mb-4 cursor-pointer text-blue-600 dark:text-blue-400">
+            <Link href={"/"}>TravelBuddy</Link>
           </h3>
           <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
             Connect with fellow travelers, share experiences, and explore the world together.
           </p>
+          
         </div>
 
         {/* Contact Section */}
@@ -22,7 +25,7 @@ export default function Footer() {
             Contact
           </h3>
           <p className="text-sm text-gray-700 dark:text-gray-300">
-            Email: saiful737rf@gmail.com
+            Email: saifulrasel737rf@gmail.com
           </p>
           <p className="text-sm text-gray-700 dark:text-gray-300">
             Phone: +8801624616583

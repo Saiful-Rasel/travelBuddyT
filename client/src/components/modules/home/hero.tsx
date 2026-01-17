@@ -5,7 +5,7 @@ import Link from "next/link";
 import { TravelPlan } from "@/components/types/travelPlan";
 import { User } from "@/components/types/user";
 import PremiumItineraryClient from "../local-ai/localai";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 interface HeroProps {
   travelPlans: TravelPlan[];
@@ -13,16 +13,22 @@ interface HeroProps {
 }
 
 export default function Hero({ travelPlans, user }: HeroProps) {
+  const travelPlansRef = useRef<HTMLDivElement>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [plans, setPlans] = useState(travelPlans);
   const [loading, setLoading] = useState(false);
 
+  const scrollToTravelPlans = () => {
+    if (travelPlansRef.current) {
+      travelPlansRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   const fetchPlans = async (type?: string) => {
     setLoading(true);
     try {
       const query = type ? `?travelType=${type}` : "";
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/feed${query}`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/travel-plans/feed${query}`,
       );
       const data = await res.json();
       setPlans(data.data?.data || []);
@@ -38,7 +44,7 @@ export default function Hero({ travelPlans, user }: HeroProps) {
   };
 
   return (
-    <div className="w-full flex flex-col gap-12 px-4 sm:px-6 md:px-10 transition-colors">
+    <div className="w-full mt-4 flex flex-col gap-12 px-4 sm:px-6 md:px-10 transition-colors">
       {/* Hero Banner */}
       <section className="h-[60vh] sm:h-[70vh] md:h-[80vh] flex flex-col items-center justify-center text-center bg-gradient-to-br from-blue-500 to-indigo-600 text-white p-6 sm:p-10 rounded-2xl">
         <motion.h1
@@ -58,10 +64,27 @@ export default function Hero({ travelPlans, user }: HeroProps) {
           Discover the beauty of Bangladesh, explore hidden gems, and plan your
           perfect journey.
         </motion.p>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          onClick={scrollToTravelPlans}
+          className="
+    mt-6
+    px-6 py-3 cursor-pointer
+    bg-white text-blue-600 font-semibold
+    rounded-lg shadow-lg
+  "
+        >
+          Explore Travel Plans
+        </motion.button>
       </section>
 
       {/* Explore Travel Plans */}
-      <section className="w-full py-5 bg-zinc-50 dark:bg-black rounded-xl sm:rounded-2xl">
+      <section
+        ref={travelPlansRef}
+        className="w-full py-5 bg-white dark:bg-black rounded-xl sm:rounded-2xl"
+      >
         <div className="text-center max-w-xl sm:max-w-3xl md:max-w-6xl mx-auto mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
             Explore Travel Plans
@@ -71,9 +94,13 @@ export default function Hero({ travelPlans, user }: HeroProps) {
           </p>
         </div>
 
-        <div className="mx-auto lg:max-w-[1600px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="mx-auto  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {travelPlans.map((plan) => (
-            <Link key={plan.id} href={`/travel-plans/${plan.id}`} className="block">
+            <Link
+              key={plan.id}
+              href={`/travel-plans/${plan.id}`}
+              className="block"
+            >
               <TravelPlanCard {...plan} />
             </Link>
           ))}
@@ -96,7 +123,11 @@ export default function Hero({ travelPlans, user }: HeroProps) {
           Why Choose Us
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-          {["Verified Travelers", "Best Recommendations", "Secure & Fast Booking"].map((item, i) => (
+          {[
+            "Verified Travelers",
+            "Best Recommendations",
+            "Secure & Fast Booking",
+          ].map((item, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -116,7 +147,7 @@ export default function Hero({ travelPlans, user }: HeroProps) {
       </section>
 
       {/* Travel Categories */}
-      <section className="p-4 sm:p-6 md:p-10 bg-zinc-50 dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow dark:shadow-gray-700 transition-colors">
+      <section className="p-4 sm:p-6 md:p-10 bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow dark:shadow-gray-700 transition-colors">
         <h2 className="text-2xl sm:text-3xl md:text-3xl font-bold mb-4 sm:mb-6 text-center text-gray-900 dark:text-gray-100">
           Travel Type
         </h2>
@@ -135,14 +166,16 @@ export default function Hero({ travelPlans, user }: HeroProps) {
                   : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 hover:shadow-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               }`}
             >
-              <h3 className="text-sm sm:text-base md:text-lg font-semibold">{cat}</h3>
+              <h3 className="text-sm sm:text-base md:text-lg font-semibold">
+                {cat}
+              </h3>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* Travel Plans Cards */}
-      <section className="w-full py-8">
+      <section className="w-full ">
         {loading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {[...Array(8)].map((_, i) => (
@@ -160,10 +193,18 @@ export default function Hero({ travelPlans, user }: HeroProps) {
           </p>
         )}
 
-        <div className="mx-auto lg:max-w-[1600px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mt-4">
+        <div className="mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {(selectedType ? plans : plans.slice(0, 4)).map((plan) => (
-            <Link key={plan.id} href={`/travel-plans/${plan.id}`} className="block">
-              <motion.div whileHover={{ scale: 1.03 }} transition={{ duration: 0.3 }}>
+            <Link
+              key={plan.id}
+              href={`/travel-plans/${plan.id}`}
+              className="block"
+            >
+              <motion.div
+                className=" md:h-120  "
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.3 }}
+              >
                 <TravelPlanCard {...plan} />
               </motion.div>
             </Link>
@@ -172,7 +213,7 @@ export default function Hero({ travelPlans, user }: HeroProps) {
       </section>
 
       {/* Premium Itinerary */}
-      <section className="p-4  sm:p-6 md:p-10 bg-zinc-50 dark:bg-gray-900 w-full rounded-xl mb-16 sm:rounded-2xl shadow dark:shadow-gray-700 transition-colors">
+      <section className=" -p-2 bg-white dark:bg-gray-900 w-full rounded-xl mb-16 sm:rounded-2xl shadow dark:shadow-gray-700 transition-colors">
         <PremiumItineraryClient user={user} />
       </section>
     </div>
