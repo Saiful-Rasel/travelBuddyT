@@ -30,11 +30,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased
           bg-gray-50 text-gray-900 
-          dark:bg-gray-900 dark:text-gray-50`} // 
+          dark:bg-gray-900 dark:text-gray-50`} 
       >
         <div className="flex flex-col ">
           <NavbarServer />
-          <main className="flex-1 pt-[76px] ">
+          <main className="flex-1 pt-[76px] min-h-screen ">
             {children}
           </main>
           <Toaster richColors position="top-right" />

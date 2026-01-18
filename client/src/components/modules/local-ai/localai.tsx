@@ -185,8 +185,7 @@ export default function PremiumItineraryClient({
           text-gray-900 dark:text-white
           placeholder-gray-400 dark:placeholder-gray-300
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-          transition
-          w-full sm:w-[350px] md:w-[400px] lg:w-[450px]
+          transition w-full sm:w-[350px] md:w-[400px] lg:w-[450px]
         "
               />
 
@@ -249,8 +248,8 @@ export default function PremiumItineraryClient({
           </p>
           <p className="text-white md:text-xl font-semibold mb-4">Premium service fee: {amount} BDT</p>
           <Button
-            size="lg"
-            className="bg-white text-blue-600  hover:bg-gray-100 rounded-lg"
+            size="sm"
+            className="bg-white text-blue-600  hover:bg-gray-100 rounded-lg "
             onClick={handleUnlock}
           >
             Unlock AI Service

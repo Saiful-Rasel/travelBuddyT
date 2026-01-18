@@ -9,13 +9,13 @@ model User {
   travelInterests  String[]
   visitedCountries String[]
   currentLocation  String?
-  premium          Boolean        @default(false)
-  travelPlans      TravelPlan[]
-  sentRequests     MatchRequest[] @relation("SenderRequests")
-  receivedRequests MatchRequest[] @relation("ReceiverRequests")
-  reviewsGiven     Review[]       @relation("UserReviewsGiven")
-  reviewsReceived  Review[]       @relation("UserReviewsReceived")
-  payments         Payment[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  premium          Boolean        @default(false)
+  receivedRequests MatchRequest[] @relation("ReceiverRequests")
+  sentRequests     MatchRequest[] @relation("SenderRequests")
+  payments         Payment[]
+  reviewsReceived  Review[]       @relation("UserReviewsReceived")
+  reviewsGiven     Review[]       @relation("UserReviewsGiven")
+  travelPlans      TravelPlan[]
 }

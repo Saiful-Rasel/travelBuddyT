@@ -1,16 +1,15 @@
 model MatchRequest {
-  id            Int        @id @default(autoincrement())
-  senderId      Int
-  receiverId    Int
-  travelPlanId  Int
-  message       String?
-  status        String     @default("PENDING")  
-  sender        User       @relation("SenderRequests", fields: [senderId], references: [id])
-  receiver      User       @relation("ReceiverRequests", fields: [receiverId], references: [id])
-  travelPlan    TravelPlan @relation(fields: [travelPlanId], references: [id])
-
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id           Int        @id @default(autoincrement())
+  senderId     Int
+  receiverId   Int
+  travelPlanId Int
+  message      String?
+  status       String     @default("PENDING")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  receiver     User       @relation("ReceiverRequests", fields: [receiverId], references: [id])
+  sender       User       @relation("SenderRequests", fields: [senderId], references: [id])
+  travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id])
 
   @@unique([senderId, travelPlanId])
   @@index([receiverId])

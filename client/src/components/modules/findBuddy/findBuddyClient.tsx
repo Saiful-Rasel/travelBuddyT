@@ -13,7 +13,7 @@ interface Props {
 
 export default function FindBuddyClient({ initialTravelers }: Props) {
   const [travelers, setTravelers] = useState(initialTravelers);
-  const [search, setSearch] = useState("");
+
   const [location, setLocation] = useState("");
   const [interest, setInterest] = useState("");
 

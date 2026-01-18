@@ -71,7 +71,9 @@ export default function Hero({ travelPlans, user }: HeroProps) {
           onClick={scrollToTravelPlans}
           className="
     mt-6
-    px-6 py-3 cursor-pointer
+    px-4 sm:px-6 py-2 sm:py-3
+    text-sm sm:text-base
+    cursor-pointer
     bg-white text-blue-600 font-semibold
     rounded-lg shadow-lg
   "

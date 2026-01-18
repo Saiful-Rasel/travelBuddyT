@@ -1,7 +1,5 @@
 model TravelPlan {
   id            Int            @id @default(autoincrement())
-  userId        Int
-  user          User           @relation(fields: [userId], references: [id])
   title         String
   destination   String
   startDate     DateTime
@@ -14,11 +12,13 @@ model TravelPlan {
   latitude      Float?
   longitude     Float?
   isActive      Boolean        @default(true)
-  matchRequests MatchRequest[]
-  image         String?
-  reviews       Review[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  userId        Int
+  image         String?
+  matchRequests MatchRequest[]
+  reviews       Review[]
+  user          User           @relation(fields: [userId], references: [id])
 
   @@index([destination])
   @@index([startDate, endDate])
