@@ -1,9 +1,10 @@
 import express from "express";
 
-import { Role } from "@prisma/client";
+
 import { newsletterController } from "./newsLetter.controller";
-import { authRoutes } from "../auth/auth.route";
+
 import auth from "../../middleware/authGuard";
+import { Role } from "@prisma/client";
 
 const router = express.Router();
 

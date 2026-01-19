@@ -35,33 +35,30 @@ export default function PremiumItineraryClient({
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tranId = searchParams.get("tran_id"); 
+  const tranId = searchParams.get("tran_id");
   const [destination, setDestination] = useState("");
   const [itinerary, setItinerary] = useState<ItineraryData | null>(null);
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(user || null);
 
-  // Update currentUser when prop changes
+  // Update currentUser on prop change
   useEffect(() => {
     setCurrentUser(user || null);
   }, [user]);
 
-  // Handle payment success redirect
+  // Update premium status after payment
   useEffect(() => {
     const updatePremiumStatus = async () => {
       if (tranId && currentUser && !currentUser.premium) {
         try {
           const token = await getCookie("accessToken");
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`,
-            {
-              cache: "no-store",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/me`, {
+            cache: "no-store",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
           const data = await res.json();
           if (data.success && data.data) {
             setCurrentUser(data.data);
@@ -71,50 +68,49 @@ export default function PremiumItineraryClient({
           }
         } catch (err) {
           console.error(err);
+          toast.error("Failed to update premium status.");
         }
       }
     };
     updatePremiumStatus();
   }, [tranId, currentUser, router, setUser]);
 
-  // Initiate payment
-  const handleUnlock = async () => {
-    if (!currentUser) {
-      toast.error("Please login first");
-      router.push("/login?redirect=/");
-      return;
-    }
-    if (!currentUser.premium) {
-      try {
-        const token = await getCookie("accessToken");
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/create`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ amount }),
-          }
-        );
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(text || "Payment initiation failed");
-        }
-        const paymentUrl = (await res.json())?.data?.paymentUrl;
-        if (!paymentUrl) {
-          toast.error("Payment URL not received");
-          return;
-        }
-        // Redirect to payment gateway
-        window.location.href = paymentUrl;
-      } catch (err: any) {
-        console.error(err);
-        toast.error(err.message || "Failed to initiate payment");
+  // Handle Unlock AI Service
+const handleUnlock = async () => {
+  if (!currentUser) {
+    toast.error("Please login first");
+    router.push("/login?redirect=/");
+    return;
+  }
+  if (!currentUser.premium) {
+    try {
+      const token = await getCookie("accessToken");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ amount }),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Payment initiation failed");
       }
+      const paymentUrl = (await res.json())?.data?.paymentUrl;
+      console.log(paymentUrl,"payment")
+      if (!paymentUrl) {
+        toast.error("Payment URL not received");
+        return;
+      }
+      window.location.href = paymentUrl;
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to initiate payment");
     }
-  };
+  }
+};
 
   // Generate AI itinerary
   const handleGenerateItinerary = async (e: FormEvent) => {
@@ -126,18 +122,15 @@ export default function PremiumItineraryClient({
     setLoading(true);
     try {
       const token = await getCookie("accessToken");
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/ai/itinerary`,
-        {
-          method: "POST",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token || ""}`,
-          },
-          body: JSON.stringify({ destination }),
-        }
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/ai/itinerary`, {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token || ""}`,
+        },
+        body: JSON.stringify({ destination }),
+      });
       if (!res.ok) {
         const text = await res.text();
         throw new Error(text || "Failed to generate itinerary");
@@ -157,15 +150,14 @@ export default function PremiumItineraryClient({
   };
 
   return (
-    <div className=" mx-auto p-4">
-      <h1 className="md:text-2xl font-bold mb-4 md:text-center text-gray-900 dark:text-white">
+    <div className="mx-auto bg-white dark:bg-gray-900 p-4 rounded-xl transition-colors">
+      <h1 className="md:text-2xl font-bold md:text-center text-gray-900 dark:text-white mb-0">
         AI Travel Itinerary
       </h1>
 
-      {/* Premium check */}
       {currentUser?.premium ? (
         <>
-          <div className="w-full flex items-center justify-center">
+          <div className="w-full flex items-center justify-center mt-2">
             <form
               className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto justify-center"
               onSubmit={handleGenerateItinerary}
@@ -177,30 +169,29 @@ export default function PremiumItineraryClient({
                 onChange={(e) => setDestination(e.target.value)}
                 disabled={loading}
                 className="
-          flex-1
-          px-4 py-2
-          rounded-lg
-          border border-gray-300 dark:border-gray-600
-          bg-white dark:bg-gray-700
-          text-gray-900 dark:text-white
-          placeholder-gray-400 dark:placeholder-gray-300
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-          transition w-full sm:w-[350px] md:w-[400px] lg:w-[450px]
-        "
+                  flex-1
+                  px-4 py-2
+                  rounded-lg
+                  border border-gray-300 dark:border-gray-600
+                  bg-white dark:bg-gray-700
+                  text-gray-900 dark:text-white
+                  placeholder-gray-400 dark:placeholder-gray-300
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                  transition w-full sm:w-[350px] md:w-[400px] lg:w-[450px]
+                "
               />
-
               <button
                 type="submit"
                 disabled={loading}
                 className="
-          mt-2 sm:mt-0
-          px-4 py-2
-          rounded-lg
-          bg-blue-500 text-white
-          hover:bg-blue-600
-          disabled:bg-gray-400 disabled:cursor-not-allowed
-          transition
-        "
+                  mt-2 sm:mt-0
+                  px-4 py-2
+                  rounded-lg
+                  bg-blue-500 text-white
+                  hover:bg-blue-600
+                  disabled:bg-gray-400 disabled:cursor-not-allowed
+                  transition
+                "
               >
                 {loading ? "Generating..." : "Generate"}
               </button>
@@ -208,31 +199,20 @@ export default function PremiumItineraryClient({
           </div>
 
           {itinerary && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                Destination: {itinerary.destination} ({itinerary.days} days)
-              </h2>
+            <div className="space-y-4 mt-4">
               {Object.entries(itinerary.itinerary).map(([day, info]) => (
                 <div
                   key={day}
-                  className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 shadow-sm"
+                  className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 transition-colors"
                 >
                   <h3 className="font-semibold mb-2 capitalize text-gray-900 dark:text-white">
                     {day}
                   </h3>
                   <ul className="list-disc list-inside space-y-1 text-gray-800 dark:text-gray-300">
-                    <li>
-                      <strong>Morning:</strong> {info.morning}
-                    </li>
-                    <li>
-                      <strong>Afternoon:</strong> {info.afternoon}
-                    </li>
-                    <li>
-                      <strong>Evening:</strong> {info.evening}
-                    </li>
-                    <li>
-                      <strong>Estimated Cost:</strong> {info.estimatedCost}
-                    </li>
+                    <li><strong>Morning:</strong> {info.morning}</li>
+                    <li><strong>Afternoon:</strong> {info.afternoon}</li>
+                    <li><strong>Evening:</strong> {info.evening}</li>
+                    <li><strong>Estimated Cost:</strong> {info.estimatedCost}</li>
                   </ul>
                 </div>
               ))}
@@ -240,16 +220,16 @@ export default function PremiumItineraryClient({
           )}
         </>
       ) : (
-        <div className="h-[30vh] flex flex-col items-center justify-center rounded-xl bg-blue-600 p-4">
-          <p className="text-white mb-2">
-            {currentUser
-              ? `Hello, ${currentUser.fullName}`
-              : "Unlock AI Travel Itinerary"}
+        <div className="p-8 flex flex-col items-center justify-center rounded-xl transition-colors">
+          <p className="text-gray-900 dark:text-white mb-2">
+            {currentUser ? `Hello, ${currentUser.fullName}` : "Unlock AI Travel Itinerary"}
           </p>
-          <p className="text-white md:text-xl font-semibold mb-4">Premium service fee: {amount} BDT</p>
+          <p className="text-gray-900 dark:text-white md:text-xl font-semibold mb-4">
+            Premium service fee: {amount} BDT
+          </p>
           <Button
             size="sm"
-            className="bg-white text-blue-600  hover:bg-gray-100 rounded-lg "
+            className="bg-blue-600 text-white cursor-pointer hover:bg-blue-700 rounded-lg"
             onClick={handleUnlock}
           >
             Unlock AI Service

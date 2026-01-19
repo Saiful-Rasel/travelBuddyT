@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { motion } from "framer-motion";
 import TravelPlanCard from "../travel-plans/travelPlanCard";
@@ -6,6 +7,7 @@ import { TravelPlan } from "@/components/types/travelPlan";
 import { User } from "@/components/types/user";
 import PremiumItineraryClient from "../local-ai/localai";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface HeroProps {
   travelPlans: TravelPlan[];
@@ -215,8 +217,64 @@ export default function Hero({ travelPlans, user }: HeroProps) {
       </section>
 
       {/* Premium Itinerary */}
-      <section className=" -p-2 bg-white dark:bg-gray-900 w-full rounded-xl mb-16 sm:rounded-2xl shadow dark:shadow-gray-700 transition-colors">
+      <section className=" p-4 bg-white dark:bg-gray-900 w-full rounded-xl md:mb-6 sm:rounded-2xl shadow dark:shadow-gray-700 transition-colors">
         <PremiumItineraryClient user={user} />
+      </section>
+
+      {/* {newsletter section } */}
+      <section className="w-full py-12 px-4 mb-8 md:mb-12 sm:px-6  bg-white dark:bg-gray-900 rounded-2xl flex flex-col items-center gap-6 shadow-lg transition-colors">
+        <h2 className="text-xl md:text-2xl font-bold text-center text-gray-900 dark:text-white">
+          Subscribe to Our Newsletter
+        </h2>
+        <p className="text-center text-sm sm:text-base md:text-lg max-w-2xl text-gray-700 dark:text-gray-300">
+          Get the latest travel plans, tips, and special deals delivered to your
+          inbox.
+        </p>
+
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const email = (
+              e.currentTarget.elements.namedItem("email") as HTMLInputElement
+            ).value;
+            try {
+              const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/newsletter/subscribe`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ email }),
+                },
+              );
+
+              const data = await res.json();
+
+              if (!res.ok) {
+                throw new Error(data.message || "Something went wrong");
+              }
+
+              toast.success(data.message);
+            } catch (err: any) {
+              toast.error(err.message || "Failed to subscribe");
+              console.error(err);
+            }
+          }}
+          className="flex flex-col sm:flex-row gap-2 w-full max-w-md"
+        >
+          <input
+            type="email"
+            name="email"
+            required
+            placeholder="Enter your email"
+            className="flex-1 px-4 py-2 sm:py-3 rounded-lg border focus:outline-none text-gray-900 dark:text-gray-100 text-sm sm:text-base"
+          />
+          <button
+            type="submit"
+            className="px-6 py-2 cursor-pointer sm:py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 dark:bg-indigo-500 dark:text-white dark:hover:bg-indigo-600 transition text-sm sm:text-base"
+          >
+            Subscribe
+          </button>
+        </form>
       </section>
     </div>
   );

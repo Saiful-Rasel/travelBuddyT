@@ -27,6 +27,7 @@ const subscribeController = (0, catchAsync_1.default)((req, res) => __awaiter(vo
     });
 }));
 const listSubscribersController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.user);
     const subscribers = yield newsLetter_service_1.newsletterService.getAllSubscribers();
     (0, sendResponse_1.default)(res, {
         statusCode: 200,

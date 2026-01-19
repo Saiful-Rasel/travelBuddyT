@@ -31,7 +31,7 @@ export default function RootLayout({
           antialiased
           min-h-screen
           bg-gray-50 text-gray-900
-          dark:bg-gray-900 dark:text-gray-50
+          dark:bg-black dark:text-gray-50
         `}
       >
         {children}

@@ -16,7 +16,7 @@ export default async function FindBuddyPage() {
 
   const data = await res.json();
   const allTravelers: User[] = data.data?.data || [];
-  console.log(allTravelers)
+
 
   return <FindBuddyClient initialTravelers={allTravelers} />;
 }
