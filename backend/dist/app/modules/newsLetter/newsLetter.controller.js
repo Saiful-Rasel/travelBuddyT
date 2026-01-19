@@ -16,8 +16,12 @@ exports.newsletterController = void 0;
 const catchAsync_1 = __importDefault(require("../../shared/catchAsync"));
 const newsLetter_service_1 = require("./newsLetter.service");
 const sendResponse_1 = __importDefault(require("../../shared/sendResponse"));
+const appError_1 = __importDefault(require("../../errors/appError"));
 const subscribeController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
+    if (!email || typeof email !== "string") {
+        throw new appError_1.default(402, "Valid email is required");
+    }
     const subscriber = yield newsLetter_service_1.newsletterService.subscribeNewsletter(email);
     (0, sendResponse_1.default)(res, {
         statusCode: 201,
@@ -37,6 +41,9 @@ const listSubscribersController = (0, catchAsync_1.default)((req, res) => __awai
 }));
 const deleteSubscriberController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
+    if (!id || typeof id !== "string") {
+        throw new appError_1.default(402, "Subscriber ID is required");
+    }
     const subscriber = yield newsLetter_service_1.newsletterService.removeSubscriber(id);
     (0, sendResponse_1.default)(res, {
         statusCode: 200,
