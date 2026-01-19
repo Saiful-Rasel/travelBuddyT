@@ -1,19 +1,18 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+
 import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function PaymentSuccessPage() {
-  const router = useRouter();
+
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
-    const tranId = query.get("tran_id");
+    const tranId = query.get("tranId");
+    console.log(tranId,"transid")
     if (tranId) {
       toast.success("Payment successful!");
-      // Optional: verify with backend API
-      // router.push("/ai-itinerary/use");
     }
   }, []);
 

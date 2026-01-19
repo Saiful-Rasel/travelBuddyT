@@ -16,9 +16,10 @@ export default function ProfileClient({ initialData, loggedInUser }: Props) {
   const isOwnProfile = loggedInUser?.id === profileData.id;
 
   return (
-    <div className="max-w-4xl mx-auto mt-24 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center sm:text-left">
-        {profileData.fullName} Profile
+    <div className="">
+      <div className="max-w-4xl mx-auto mt-24 px-4 sm:px-6 lg:px-8">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center md:text-center  sm:text-left">
+       <span className="text-blue-500"> {profileData.fullName}  </span> Profile
       </h1>
 
       <div className="flex flex-col items-center md:flex-row md:items-start gap-6">
@@ -61,6 +62,7 @@ export default function ProfileClient({ initialData, loggedInUser }: Props) {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }

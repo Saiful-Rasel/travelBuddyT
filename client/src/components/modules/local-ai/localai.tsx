@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { User } from "@/components/types/user";
 import { Button } from "@/components/ui/button";
-
 import { getCookie } from "@/service/auth/tokenHandler";
 
 interface Props {
@@ -41,12 +40,10 @@ export default function PremiumItineraryClient({
   const [loading, setLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(user || null);
 
-  // Update currentUser on prop change
   useEffect(() => {
     setCurrentUser(user || null);
   }, [user]);
 
-  // Update premium status after payment
   useEffect(() => {
     const updatePremiumStatus = async () => {
       if (tranId && currentUser && !currentUser.premium) {
@@ -75,47 +72,41 @@ export default function PremiumItineraryClient({
     updatePremiumStatus();
   }, [tranId, currentUser, router, setUser]);
 
-  // Handle Unlock AI Service
-const handleUnlock = async () => {
-  if (!currentUser) {
-    toast.error("Please login first");
-    router.push("/login?redirect=/");
-    return;
-  }
-  if (!currentUser.premium) {
-    try {
-      const token = await getCookie("accessToken");
-      console.log(token,"token")
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ amount }),
-        credentials: "include",
-      });
-      console.log(res,"res")
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Payment initiation failed");
-      }
-       const json = await res.json();
-      const paymentUrl = json?.data?.paymentUrl;
-      console.log(json,"payment")
-        if (!paymentUrl) {
-      toast.error(json?.data?.tranId ? `Transaction ID: ${json.data.tranId}` : "Payment URL not received");
+  const handleUnlock = async () => {
+    if (!currentUser) {
+      toast.error("Please login first");
+      router.push("/login?redirect=/");
       return;
     }
-      window.location.href = paymentUrl;
-    } catch (err: any) {
-      
-      toast.error(err.message || "Failed to initiate payment");
+    if (!currentUser.premium) {
+      try {
+        const token = await getCookie("accessToken");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/create`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ amount }),
+          credentials: "include",
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(text || "Payment initiation failed");
+        }
+        const json = await res.json();
+        const paymentUrl = json?.data?.paymentUrl;
+        if (!paymentUrl) {
+          toast.error(json?.data?.tranId ? `Transaction ID: ${json.data.tranId}` : "Payment URL not received");
+          return;
+        }
+        window.location.href = paymentUrl;
+      } catch (err: any) {
+        toast.error(err.message || "Failed to initiate payment");
+      }
     }
-  }
-};
+  };
 
-  // Generate AI itinerary
   const handleGenerateItinerary = async (e: FormEvent) => {
     e.preventDefault();
     if (!destination.trim()) {
@@ -153,62 +144,61 @@ const handleUnlock = async () => {
   };
 
   return (
-    <div className="mx-auto bg-white dark:bg-gray-900 p-4 rounded-xl transition-colors">
-      <h1 className="md:text-2xl font-bold md:text-center text-gray-900 dark:text-white mb-0">
+    <div className="mx-auto bg-white dark:bg-gray-900 p-6 sm:p-8 rounded-2xl shadow-lg transition-colors">
+      <h1 className="md:text-3xl font-semibold text-center md:text-center text-gray-900 dark:text-white mb-6">
         AI Travel Itinerary
       </h1>
 
       {currentUser?.premium ? (
         <>
-          <div className="w-full flex items-center justify-center mt-2">
-            <form
-              className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto justify-center"
-              onSubmit={handleGenerateItinerary}
+          <form
+            className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center items-center"
+            onSubmit={handleGenerateItinerary}
+          >
+            <input
+              type="text"
+              placeholder="Enter destination"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              disabled={loading}
+              className="
+                flex-1
+                px-5 py-3
+                rounded-lg
+                border border-gray-300 dark:border-gray-600
+                bg-white dark:bg-gray-700
+                text-gray-900 dark:text-white
+                placeholder-gray-400 dark:placeholder-gray-300
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                transition
+                w-full sm:w-[400px] md:w-[450px] lg:w-[500px]
+              "
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="
+                mt-2 sm:mt-0
+                px-6 py-3
+                rounded-lg
+                bg-blue-600 text-white font-semibold
+                hover:bg-blue-700
+                disabled:bg-gray-400 disabled:cursor-not-allowed
+                transition
+              "
             >
-              <input
-                type="text"
-                placeholder="Enter destination"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                disabled={loading}
-                className="
-                  flex-1
-                  px-4 py-2
-                  rounded-lg
-                  border border-gray-300 dark:border-gray-600
-                  bg-white dark:bg-gray-700
-                  text-gray-900 dark:text-white
-                  placeholder-gray-400 dark:placeholder-gray-300
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                  transition w-full sm:w-[350px] md:w-[400px] lg:w-[450px]
-                "
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="
-                  mt-2 sm:mt-0
-                  px-4 py-2
-                  rounded-lg
-                  bg-blue-500 text-white
-                  hover:bg-blue-600
-                  disabled:bg-gray-400 disabled:cursor-not-allowed
-                  transition
-                "
-              >
-                {loading ? "Generating..." : "Generate"}
-              </button>
-            </form>
-          </div>
+              {loading ? "Generating..." : "Generate"}
+            </button>
+          </form>
 
           {itinerary && (
-            <div className="space-y-4 mt-4">
+            <div className="space-y-5 mt-6">
               {Object.entries(itinerary.itinerary).map(([day, info]) => (
                 <div
                   key={day}
-                  className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800 transition-colors"
+                  className="border rounded-xl p-5 bg-gray-50 dark:bg-gray-800 transition-colors"
                 >
-                  <h3 className="font-semibold mb-2 capitalize text-gray-900 dark:text-white">
+                  <h3 className="font-semibold mb-3 capitalize text-gray-900 dark:text-white text-lg">
                     {day}
                   </h3>
                   <ul className="list-disc list-inside space-y-1 text-gray-800 dark:text-gray-300">
@@ -223,16 +213,16 @@ const handleUnlock = async () => {
           )}
         </>
       ) : (
-        <div className="p-8 flex flex-col items-center justify-center rounded-xl transition-colors">
-          <p className="text-gray-900 dark:text-white mb-2">
+        <div className="p-4 flex flex-col items-center justify-center  transition-colors">
+          <p className="text-lg text-gray-900 dark:text-white mb-2">
             {currentUser ? `Hello, ${currentUser.fullName}` : "Unlock AI Travel Itinerary"}
           </p>
-          <p className="text-gray-900 dark:text-white md:text-xl font-semibold mb-4">
+          <p className="text-xl font-semibold text-gray-900 dark:text-white mb-5">
             Premium service fee: {amount} BDT
           </p>
           <Button
             size="sm"
-            className="bg-blue-600 text-white cursor-pointer hover:bg-blue-700 rounded-lg"
+            className="bg-blue-600 text-white hover:bg-blue-700 rounded-lg px-6 py-3 font-semibold shadow-md transition"
             onClick={handleUnlock}
           >
             Unlock AI Service
