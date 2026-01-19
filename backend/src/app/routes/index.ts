@@ -7,6 +7,7 @@ import { reviewRoutes } from '../modules/reviews/reviews.route';
 import { aiRoutes } from '../modules/LocalAi/ai.route';
 import { paymentRoutes } from '../modules/payment/payment.route';
 import { AdminRoutes } from '../modules/admin/admin.route';
+import { newsletterRoutes } from '../modules/newsLetter/newsletter.route';
 
 
 
@@ -44,6 +45,10 @@ const moduleRoutes = [
     {
         path: '/admin',
         route: AdminRoutes
+    },
+    {
+        path: '/newsletter',
+        route: newsletterRoutes
     },
    
 ];

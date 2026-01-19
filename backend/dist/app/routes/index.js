@@ -12,6 +12,7 @@ const reviews_route_1 = require("../modules/reviews/reviews.route");
 const ai_route_1 = require("../modules/LocalAi/ai.route");
 const payment_route_1 = require("../modules/payment/payment.route");
 const admin_route_1 = require("../modules/admin/admin.route");
+const newsletter_route_1 = require("../modules/newsLetter/newsletter.route");
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -45,6 +46,10 @@ const moduleRoutes = [
     {
         path: '/admin',
         route: admin_route_1.AdminRoutes
+    },
+    {
+        path: '/newsletter',
+        route: newsletter_route_1.newsletterRoutes
     },
 ];
 moduleRoutes.forEach(route => router.use(route.path, route.route));
