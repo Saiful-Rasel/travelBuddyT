@@ -30,7 +30,7 @@ export default function FindBuddyClient({ initialTravelers }: Props) {
   });
 
   return (
-    <div className="min-h-screen w-full bg-white text-black dark:bg-black dark:text-white">
+    <div className="min-h-screen w-full p-6 md:p-8 bg-white text-black dark:bg-black dark:text-white">
       <div className="max-w-7xl mx-auto pt-24 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold mb-2">

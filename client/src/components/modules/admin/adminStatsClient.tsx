@@ -9,6 +9,7 @@ import {
   CheckCircle,
   DollarSign,
 } from "lucide-react";
+import Link from "next/link";
 
 interface StatsData {
   totalUsers: number;
@@ -47,25 +48,50 @@ export default function AdminStats({ stats }: { stats: StatsData }) {
 
   return (
     <div className="space-y-6">
-      
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-        <StatCard title="Total Users" value={stats.totalUsers} icon={Users}
-          gradient="bg-gradient-to-r from-blue-500 to-blue-600" />
+        <Link href={"admin/manage-user"}>
+          <StatCard
+            title="Total Users"
+            value={stats.totalUsers}
+            icon={Users}
+            gradient="bg-gradient-to-r from-blue-500 to-blue-600"
+          />
+        </Link>
 
-        <StatCard title="Premium Users" value={stats.totalPremiumUsers} icon={Crown}
-          gradient="bg-gradient-to-r from-purple-500 to-pink-500" />
+        <Link href={"admin/manage-user"}>
+          <StatCard
+            title="Premium Users"
+            value={stats.totalPremiumUsers}
+            icon={Crown}
+            gradient="bg-gradient-to-r from-purple-500 to-pink-500"
+          />
+        </Link>
+        <Link href={"admin/payment"}>
+         <StatCard
+          title="Total Payments"
+          value={stats.totalPayments}
+          icon={CreditCard}
+          gradient="bg-gradient-to-r from-indigo-500 to-indigo-600"
+        />
+        </Link>
+       
+<Link href={"admin/payment"}>
 
-        <StatCard title="Total Payments" value={stats.totalPayments} icon={CreditCard}
-          gradient="bg-gradient-to-r from-indigo-500 to-indigo-600" />
-
-        <StatCard title="Successful Payments" value={stats.totalSuccessfulPayments}
+ <StatCard
+          title="Successful Payments"
+          value={stats.totalSuccessfulPayments}
           icon={CheckCircle}
-          gradient="bg-gradient-to-r from-green-500 to-emerald-500" />
+          gradient="bg-gradient-to-r from-green-500 to-emerald-500"
+        />
+</Link>
+       
 
-        <StatCard title="Total Revenue" value={`$${stats.totalRevenue}`}
+        <StatCard
+          title="Total Revenue"
+          value={`$${stats.totalRevenue}`}
           icon={DollarSign}
-          gradient="bg-gradient-to-r from-orange-500 to-red-500" />
+          gradient="bg-gradient-to-r from-orange-500 to-red-500"
+        />
       </div>
     </div>
   );

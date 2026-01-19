@@ -62,7 +62,8 @@ export function AppSidebar({ user }: AppSidebarProps) {
           { label: "Overview (Dashboard)", href: "/dashboard/admin" },
           { label: "Manage Users", href: "/dashboard/admin/manage-user" },
           { label: "Manage Travel Plans", href: "/dashboard/admin/manage-travel-plans" },
-          { label: "Payment & Subscriptions", href: "/dashboard/admin/payment" },
+          { label: "Payment", href: "/dashboard/admin/payment" },
+          { label: "Subscription", href: "/dashboard/admin/subscription" },
         
         ];
 

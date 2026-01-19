@@ -18,7 +18,7 @@ const subscribeController = catchAsync(async (req: Request, res: Response) => {
 
 
 const listSubscribersController = catchAsync(async (req: Request & { user?: any }, res: Response) => {
-    console.log(req.user);
+
   const subscribers = await newsletterService.getAllSubscribers();
   sendResponse(res, {
     statusCode: 200,

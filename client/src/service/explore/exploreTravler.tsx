@@ -45,7 +45,7 @@ export default function ExploreClient({ users, meta }: Props) {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white text-black dark:bg-black dark:text-white pt-24 px-4">
+    <div className="min-h-screen w-full bg-white text-black p-4  dark:bg-black dark:text-white pt-24 px-4">
       <div className="max-w-6xl mx-auto">
         <h2 className="md:text-3xl text-center font-bold mb-6">Explore Travelers</h2>
 

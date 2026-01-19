@@ -16,6 +16,10 @@ const createPayment = catchAsync(
     });
   }
 );
+
+
+
 export const paymentController = {
   createPayment,
+
 };

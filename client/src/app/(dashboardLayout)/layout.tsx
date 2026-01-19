@@ -34,7 +34,8 @@ export default async function DashboardLayout({
 
           <div className="">
             <Toaster richColors position="top-right" />
-            {children}</div>
+            {children}
+            </div>
         </main>
       </div>
     </SidebarProvider>

@@ -13,7 +13,6 @@ interface NavbarClientProps {
 }
 
 export default function NavbarClient({ currentUser }: NavbarClientProps) {
-  
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -36,9 +35,10 @@ export default function NavbarClient({ currentUser }: NavbarClientProps) {
   };
 
   const links = [
-    { href: "/travel-plans", label: "All Travel Plans", public: true },
+    { href: "/travel-plans", label: "Travel Plans", public: true },
     { href: "/explore", label: "Explore Travelers", public: true },
     { href: "/find-buddy", label: "Find Travel Buddy", guestOnly: true },
+    { href: "/about", label: "About Us", public: true },
     { href: "/login", label: "Login", guestOnly: true },
     { href: "/register", label: "Register", guestOnly: true, fontBold: true },
     { href: "/dashboard/travel-plans", label: "My Travel Plans", role: "USER" },
@@ -48,8 +48,10 @@ export default function NavbarClient({ currentUser }: NavbarClientProps) {
 
   return (
     <nav className="w-full px-4 py-4 fixed top-0 z-50 flex justify-between items-center shadow-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      {/* Logo */}
-      <Link href="/" className="text-xl font-bold text-blue-600 dark:text-blue-400">
+      <Link
+        href="/"
+        className="text-xl font-bold text-blue-600 dark:text-blue-400"
+      >
         TravelBuddy
       </Link>
 
@@ -68,8 +70,7 @@ export default function NavbarClient({ currentUser }: NavbarClientProps) {
             </Link>
           );
         })}
-
-        {/* Dark mode toggle always visible */}
+        
         <button onClick={toggleDarkMode}>
           {darkMode ? <HiSun size={22} /> : <HiMoon size={22} />}
         </button>

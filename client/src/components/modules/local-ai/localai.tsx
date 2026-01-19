@@ -85,6 +85,7 @@ const handleUnlock = async () => {
   if (!currentUser.premium) {
     try {
       const token = await getCookie("accessToken");
+      console.log(token,"token")
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/payment/create`, {
         method: "POST",
         headers: {
@@ -94,19 +95,21 @@ const handleUnlock = async () => {
         body: JSON.stringify({ amount }),
         credentials: "include",
       });
+      console.log(res,"res")
       if (!res.ok) {
         const text = await res.text();
         throw new Error(text || "Payment initiation failed");
       }
-      const paymentUrl = (await res.json())?.data?.paymentUrl;
-      console.log(paymentUrl,"payment")
-      if (!paymentUrl) {
-        toast.error("Payment URL not received");
-        return;
-      }
+       const json = await res.json();
+      const paymentUrl = json?.data?.paymentUrl;
+      console.log(json,"payment")
+        if (!paymentUrl) {
+      toast.error(json?.data?.tranId ? `Transaction ID: ${json.data.tranId}` : "Payment URL not received");
+      return;
+    }
       window.location.href = paymentUrl;
     } catch (err: any) {
-      console.error(err);
+      
       toast.error(err.message || "Failed to initiate payment");
     }
   }
