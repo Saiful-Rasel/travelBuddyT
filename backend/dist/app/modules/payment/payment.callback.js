@@ -18,11 +18,15 @@ const client_1 = require("@prisma/client");
 const config_1 = __importDefault(require("../../config"));
 const jwtHelper_1 = require("../../helpers/jwtHelper");
 const router = (0, express_1.Router)();
-router.post("/success", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+/**
+ * Success callback
+ * SSLCommerz redirects with GET, not POST
+ */
+router.get("/success", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const tranId = req.query.tran_id;
+        const tranId = req.query.tranId;
         if (!tranId)
-            return res.status(400).send("tran_id is missing");
+            return res.status(400).send("tranId is missing");
         const payment = yield prisma_1.default.payment.update({
             where: { tranId },
             data: { status: client_1.PaymentStatus.SUCCESS },
@@ -38,7 +42,6 @@ router.post("/success", (req, res) => __awaiter(void 0, void 0, void 0, function
             fullName: user.fullName,
             premium: user.premium,
         }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
-        console.log(accessToken, "from callback");
         const refreshToken = jwtHelper_1.jwtHelper.generateToken({ email: user.email, role: user.role }, config_1.default.jwt.refresh_token_secret, config_1.default.jwt.refresh_token_expires_in);
         res.cookie("accessToken", accessToken, {
             secure: true,
@@ -52,31 +55,37 @@ router.post("/success", (req, res) => __awaiter(void 0, void 0, void 0, function
             sameSite: "none",
             maxAge: 1000 * 60 * 60 * 24 * 90,
         });
-        return res.redirect(`https://travel-buddy-t.vercel.app/payment/success?tran_id=${tranId}`);
+        return res.redirect(`https://travel-buddy-t.vercel.app/payment/success?tranId=${tranId}`);
     }
     catch (error) {
-        console.log(error);
+        console.error("Payment success error:", error);
         return res.redirect("https://travel-buddy-t.vercel.app/payment/fail");
     }
 }));
-router.post("/fail", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const tranId = req.query.tran_id;
+/**
+ * Failed payment
+ */
+router.get("/fail", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const tranId = req.query.tranId;
     if (!tranId)
-        return res.status(400).send("tran_id missing");
+        return res.status(400).send("tranId missing");
     yield prisma_1.default.payment.update({
         where: { tranId },
         data: { status: client_1.PaymentStatus.FAILED },
     });
-    res.redirect(`https://travel-buddy-t.vercel.app/payment/fail?tran_id=${tranId}`);
+    res.redirect(`https://travel-buddy-t.vercel.app/payment/fail?tranId=${tranId}`);
 }));
-router.post("/cancel", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const tranId = req.query.tran_id;
+/**
+ * Cancelled payment
+ */
+router.get("/cancel", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const tranId = req.query.tranId;
     if (!tranId)
-        return res.status(400).send("tran_id missing");
+        return res.status(400).send("tranId missing");
     yield prisma_1.default.payment.update({
         where: { tranId },
         data: { status: client_1.PaymentStatus.CANCELLED },
     });
-    res.redirect(`https://travel-buddy-t.vercel.app/payment/cancel?tran_id=${tranId}`);
+    res.redirect(`https://travel-buddy-t.vercel.app/payment/cancel?tranId=${tranId}`);
 }));
 exports.default = router;
